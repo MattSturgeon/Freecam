@@ -31,7 +31,7 @@ public class BlockCollisionSpliteratorMixin {
         this.entity = entity;
     }
 
-    // Apply custom block collision rules based on ignore collision settings
+    // Apply custom block collision rules to freecam
     @Redirect(method = "computeNext()Lnet/minecraft/util/shape/VoxelShape;", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;"))
     private VoxelShape onGetCollisionShape(BlockState blockState, BlockView world, BlockPos blockPos, ShapeContext context) {
         if (entity instanceof FreeCamera) {
