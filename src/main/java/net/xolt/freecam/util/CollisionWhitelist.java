@@ -12,6 +12,7 @@ public class CollisionWhitelist {
 
     static {
         transparentWhitelist.add(AbstractGlassBlock.class);
+        transparentWhitelist.add(PaneBlock.class);
         transparentWhitelist.add(BarrierBlock.class);
 
         openableWhitelist.add(FenceGateBlock.class);
