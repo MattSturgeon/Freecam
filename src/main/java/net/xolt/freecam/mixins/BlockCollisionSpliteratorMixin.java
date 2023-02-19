@@ -13,6 +13,7 @@ import net.minecraft.world.CollisionView;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.mixins.accessors.AbstractBlockAccessor;
+import net.xolt.freecam.util.FreeCamera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,7 +34,7 @@ public class BlockCollisionSpliteratorMixin {
     // Apply custom block collision rules based on collision mode setting
     @Redirect(method = "computeNext()Lnet/minecraft/util/shape/VoxelShape;", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;"))
     private VoxelShape onGetCollisionShape(BlockState blockState, BlockView world, BlockPos blockPos, ShapeContext context) {
-        if (Freecam.isEnabled() && entity != null && entity.equals(Freecam.getFreeCamera())) {
+        if (entity instanceof FreeCamera) {
             switch (ModConfig.INSTANCE.collisionMode) {
                 case OPAQUE -> {
                     // Don't collide if transparent
@@ -42,6 +43,12 @@ public class BlockCollisionSpliteratorMixin {
                     }
                 }
                 case NONE -> {
+                    // If Freecam isn't enabled yet, then we're checking "Initial Perspective" collision.
+                    // If "Always Check Collision" is enabled, fallback to vanilla behaviour
+                    if (ModConfig.INSTANCE.checkCollision && !Freecam.isEnabled()) {
+                        break;
+                    }
+
                     // Don't collide with anything
                     return VoxelShapes.empty();
                 }
