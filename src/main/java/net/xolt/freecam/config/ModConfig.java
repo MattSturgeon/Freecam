@@ -24,7 +24,7 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
-    public CollisionMode collisionMode = CollisionMode.NONE;
+    public CollisionMode ignoreCollision = CollisionMode.IGNORE_ALL;
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
@@ -98,9 +98,9 @@ public class ModConfig implements ConfigData {
     }
 
     public enum CollisionMode implements SelectionListEntry.Translatable {
-        NONE("text.autoconfig.freecam.option.collisionMode.none"),
-        OPAQUE("text.autoconfig.freecam.option.collisionMode.opaque"),
-        ALL("text.autoconfig.freecam.option.collisionMode.all");
+        IGNORE_NONE("text.autoconfig.freecam.option.ignoreCollision.none"),
+        IGNORE_TRANSPARENT("text.autoconfig.freecam.option.ignoreCollision.transparent"),
+        IGNORE_ALL("text.autoconfig.freecam.option.ignoreCollision.all");
 
         private final String name;
 

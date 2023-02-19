@@ -35,21 +35,21 @@ public class BlockCollisionSpliteratorMixin {
     @Redirect(method = "computeNext()Lnet/minecraft/util/shape/VoxelShape;", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;"))
     private VoxelShape onGetCollisionShape(BlockState blockState, BlockView world, BlockPos blockPos, ShapeContext context) {
         if (entity instanceof FreeCamera) {
-            switch (ModConfig.INSTANCE.collisionMode) {
-                case OPAQUE -> {
-                    // Don't collide if transparent
+            switch (ModConfig.INSTANCE.ignoreCollision) {
+                case IGNORE_TRANSPARENT -> {
+                    // Ignore transparent block collisions
                     if(!((AbstractBlockAccessor) blockState.getBlock()).getMaterial().blocksLight()) {
                         return VoxelShapes.empty();
                     }
                 }
-                case NONE -> {
+                case IGNORE_ALL -> {
                     // If Freecam isn't enabled yet, then we're checking "Initial Perspective" collision.
                     // If "Always Check Collision" is enabled, fallback to vanilla behaviour
                     if (ModConfig.INSTANCE.checkCollision && !Freecam.isEnabled()) {
                         break;
                     }
 
-                    // Don't collide with anything
+                    // Ignore all collisions
                     return VoxelShapes.empty();
                 }
             }

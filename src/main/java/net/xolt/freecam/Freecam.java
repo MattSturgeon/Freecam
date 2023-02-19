@@ -18,6 +18,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 
+import static net.xolt.freecam.config.ModConfig.CollisionMode.IGNORE_ALL;
+
 public class Freecam implements ClientModInitializer {
 
     public static final MinecraftClient MC = MinecraftClient.getInstance();
@@ -168,7 +170,7 @@ public class Freecam implements ClientModInitializer {
     private static void onEnableFreecam() {
         onEnable();
         freeCamera = new FreeCamera(-420);
-        freeCamera.applyPerspective(ModConfig.INSTANCE.perspective, ModConfig.INSTANCE.checkCollision || ModConfig.INSTANCE.collisionMode != ModConfig.CollisionMode.NONE);
+        freeCamera.applyPerspective(ModConfig.INSTANCE.perspective, ModConfig.INSTANCE.checkCollision || ModConfig.INSTANCE.ignoreCollision != IGNORE_ALL);
         freeCamera.spawn();
         MC.setCameraEntity(freeCamera);
 

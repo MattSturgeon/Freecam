@@ -162,8 +162,8 @@ public class FreeCamera extends ClientPlayerEntity {
     // Prevents pistons from moving FreeCamera when noClip is enabled.
     @Override
     public PistonBehavior getPistonBehavior() {
-        return switch (ModConfig.INSTANCE.collisionMode) {
-            case NONE -> PistonBehavior.IGNORE;
+        return switch (ModConfig.INSTANCE.ignoreCollision) {
+            case IGNORE_ALL -> PistonBehavior.IGNORE;
             default -> PistonBehavior.NORMAL;
         };
     }
