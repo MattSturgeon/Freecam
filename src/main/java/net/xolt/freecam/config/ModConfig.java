@@ -26,10 +26,6 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.EnumHandler(option = EnumDisplayOption.BUTTON)
-    public CollisionMode ignoreCollision = CollisionMode.IGNORE_ALL;
-
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.EnumHandler(option = EnumDisplayOption.BUTTON)
     public Perspective perspective = Perspective.INSIDE;
 
     @ConfigEntry.Gui.Tooltip
@@ -41,6 +37,15 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public double verticalSpeed = 1.0;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean ignoreTransparentCollision = true;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean ignoreOpenableCollision = true;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean ignoreAllCollision = true;
 
     @ConfigEntry.Gui.Tooltip
     public boolean checkCollision = false;
@@ -91,23 +96,6 @@ public class ModConfig implements ConfigData {
         private final String name;
 
         InteractionMode(String name) {
-            this.name = name;
-        }
-
-        public String getKey() {
-            return name;
-        }
-    }
-
-    public enum CollisionMode implements SelectionListEntry.Translatable {
-        IGNORE_NONE("text.autoconfig.freecam.option.ignoreCollision.none"),
-        IGNORE_TRANSPARENT("text.autoconfig.freecam.option.ignoreCollision.transparent"),
-        IGNORE_OPENABLE("text.autoconfig.freecam.option.ignoreCollision.openable"),
-        IGNORE_ALL("text.autoconfig.freecam.option.ignoreCollision.all");
-
-        private final String name;
-
-        CollisionMode(String name) {
             this.name = name;
         }
 

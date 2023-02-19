@@ -31,33 +31,24 @@ public class BlockCollisionSpliteratorMixin {
         this.entity = entity;
     }
 
-    // Apply custom block collision rules based on collision mode setting
+    // Apply custom block collision rules based on ignore collision settings
     @Redirect(method = "computeNext()Lnet/minecraft/util/shape/VoxelShape;", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;getCollisionShape(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/ShapeContext;)Lnet/minecraft/util/shape/VoxelShape;"))
     private VoxelShape onGetCollisionShape(BlockState blockState, BlockView world, BlockPos blockPos, ShapeContext context) {
         if (entity instanceof FreeCamera) {
-            switch (ModConfig.INSTANCE.ignoreCollision) {
-                case IGNORE_TRANSPARENT -> {
-                    // Ignore transparent block collisions
-                    if(CollisionWhitelist.isTransparent(blockState.getBlock())) {
-                        return VoxelShapes.empty();
-                    }
-                }
-                case IGNORE_OPENABLE -> {
-                    // Ignore door/trapdoor/etc collisions
-                    if(CollisionWhitelist.isOpenable(blockState.getBlock())) {
-                        return VoxelShapes.empty();
-                    }
-                }
-                case IGNORE_ALL -> {
-                    // If Freecam isn't enabled yet, then we're checking "Initial Perspective" collision.
-                    // If "Always Check Collision" is enabled, fallback to vanilla behaviour
-                    if (ModConfig.INSTANCE.checkCollision && !Freecam.isEnabled()) {
-                        break;
-                    }
-
-                    // Ignore all collisions
+            // Unless "Always Check Collision" is on and Freecam isn't enabled yet
+            if (!ModConfig.INSTANCE.checkCollision || Freecam.isEnabled()) {
+                // Ignore all collisions
+                if (ModConfig.INSTANCE.ignoreAllCollision) {
                     return VoxelShapes.empty();
                 }
+            }
+            // Ignore transparent block collisions
+            if (ModConfig.INSTANCE.ignoreTransparentCollision && CollisionWhitelist.isTransparent(blockState.getBlock())) {
+                return VoxelShapes.empty();
+            }
+            // Ignore transparent block collisions
+            if (ModConfig.INSTANCE.ignoreOpenableCollision && CollisionWhitelist.isOpenable(blockState.getBlock())) {
+                return VoxelShapes.empty();
             }
         }
 
