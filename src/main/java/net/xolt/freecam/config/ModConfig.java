@@ -100,6 +100,7 @@ public class ModConfig implements ConfigData {
     public enum CollisionMode implements SelectionListEntry.Translatable {
         IGNORE_NONE("text.autoconfig.freecam.option.ignoreCollision.none"),
         IGNORE_TRANSPARENT("text.autoconfig.freecam.option.ignoreCollision.transparent"),
+        IGNORE_OPENABLE("text.autoconfig.freecam.option.ignoreCollision.openable"),
         IGNORE_ALL("text.autoconfig.freecam.option.ignoreCollision.all");
 
         private final String name;

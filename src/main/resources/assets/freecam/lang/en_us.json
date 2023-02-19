@@ -17,6 +17,7 @@
   "text.autoconfig.freecam.option.ignoreCollision.@Tooltip": "Which blocks you can travel through in freecam.",
   "text.autoconfig.freecam.option.ignoreCollision.none": "None",
   "text.autoconfig.freecam.option.ignoreCollision.transparent": "Transparent",
+  "text.autoconfig.freecam.option.ignoreCollision.openable": "Doors, etc",
   "text.autoconfig.freecam.option.ignoreCollision.all": "All",
   "text.autoconfig.freecam.option.perspective": "Initial Perspective",
   "text.autoconfig.freecam.option.perspective.@Tooltip": "The initial perspective of the camera.",

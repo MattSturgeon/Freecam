@@ -42,6 +42,12 @@ public class BlockCollisionSpliteratorMixin {
                         return VoxelShapes.empty();
                     }
                 }
+                case IGNORE_OPENABLE -> {
+                    // Ignore door/trapdoor/etc collisions
+                    if(CollisionWhitelist.isOpenable(blockState.getBlock())) {
+                        return VoxelShapes.empty();
+                    }
+                }
                 case IGNORE_ALL -> {
                     // If Freecam isn't enabled yet, then we're checking "Initial Perspective" collision.
                     // If "Always Check Collision" is enabled, fallback to vanilla behaviour
