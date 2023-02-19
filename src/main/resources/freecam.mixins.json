@@ -17,8 +17,7 @@
     "InGameHudMixin",
     "LivingEntityMixin",
     "MinecraftClientMixin",
-    "WorldRendererMixin",
-    "accessors.AbstractBlockAccessor"
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -12,7 +12,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
-import net.xolt.freecam.mixins.accessors.AbstractBlockAccessor;
+import net.xolt.freecam.util.CollisionWhitelist;
 import net.xolt.freecam.util.FreeCamera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ public class BlockCollisionSpliteratorMixin {
             switch (ModConfig.INSTANCE.ignoreCollision) {
                 case IGNORE_TRANSPARENT -> {
                     // Ignore transparent block collisions
-                    if(!((AbstractBlockAccessor) blockState.getBlock()).getMaterial().blocksLight()) {
+                    if(CollisionWhitelist.isTransparent(blockState.getBlock())) {
                         return VoxelShapes.empty();
                     }
                 }
