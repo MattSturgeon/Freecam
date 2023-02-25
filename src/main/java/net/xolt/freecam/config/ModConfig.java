@@ -20,7 +20,7 @@ public class ModConfig implements ConfigData {
         AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
         INSTANCE = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         GuiRegistry registry = AutoConfig.getGuiRegistry(ModConfig.class);
-        registry.registerAnnotationProvider(ListenableConfigEntry.provider, ListenableConfigEntry.class);
+//        registry.registerAnnotationProvider(ListenableConfigEntry.provider, ListenableConfigEntry.class);
         registry.registerAnnotationTransformer(ListenableConfigEntry.transformer, ListenableConfigEntry.class);
     }
 

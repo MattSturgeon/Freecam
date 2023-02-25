@@ -1,30 +1,56 @@
 package net.xolt.freecam.config;
 
-import me.shedaniel.autoconfig.gui.registry.api.GuiProvider;
 import me.shedaniel.autoconfig.gui.registry.api.GuiTransformer;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
-import me.shedaniel.clothconfig2.impl.builders.BooleanToggleBuilder;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.xolt.freecam.mixins.accessors.BooleanListEntryAccessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Retention(RetentionPolicy.RUNTIME)
 @interface ListenableConfigEntry {
     GuiTransformer transformer = (list, translationKey, field, o, o1, guiRegistryAccess) -> {
         System.err.println("Found match (transformer): " + field.getName());
-        return list;
-    };
-    GuiProvider provider = (translationKey, field, o, o1, guiRegistryAccess) -> {
-        System.err.println("Found match (provider): " + field.getName());
-        try {
-            BooleanToggleBuilder builder = new BooleanToggleBuilder(Text.translatable("reset"), Text.translatable(translationKey), field.getBoolean(o));
-            BooleanListEntry entry = builder.build();
+        if (list.size() != 1) throw new AssertionError("Expected ConfigListEntry list to contain exactly 1 entry.");
 
-            return List.of(entry);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        BooleanListEntry entry = list.stream()
+                .filter(BooleanListEntry.class::isInstance)
+                .map(BooleanListEntry.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("ListenableConfigEntry currently only supports Boolean types."));
+
+        // Get needed data from the BooleanListEntry
+        AtomicBoolean bool = ((BooleanListEntryAccessor) entry).getAtomicBoolean();
+        List<ClickableWidget> widgets = ((BooleanListEntryAccessor) entry).getChildWidgets();
+
+        // Ensure nothing weird is going on
+        if (widgets.size() != 2) throw new AssertionError("Expected BooleanListEntry to have exactly 2 children.");
+
+        // Create replacement buttons that will trigger events
+        ButtonWidget buttonWidget = ButtonWidget.builder(widgets.get(0).getMessage(), (widget) -> {
+                    boolean value = !bool.get();
+                    System.err.println("Setting value of " + field.getName() + " to " + value);
+                    bool.set(value);
+                })
+                .dimensions(widgets.get(0).getX(), widgets.get(0).getY(), widgets.get(0).getWidth(), widgets.get(0).getHeight())
+                .build();
+
+        ButtonWidget resetButton = ButtonWidget.builder(widgets.get(1).getMessage(), (widget) -> entry.getDefaultValue().ifPresent(value -> {
+                    System.err.println("Resetting " + field.getName() + " to " + value);
+                    bool.set(value);
+                }))
+                .dimensions(widgets.get(1).getX(), widgets.get(1).getY(), widgets.get(1).getWidth(), widgets.get(1).getHeight())
+                .build();
+
+        // Mutate the BooleanListEntry, replacing its buttons
+        ((BooleanListEntryAccessor) entry).setChildWidgets(List.of(buttonWidget, resetButton));
+        ((BooleanListEntryAccessor) entry).setButtonWidget(buttonWidget);
+        ((BooleanListEntryAccessor) entry).setResetButton(resetButton);
+
+        return list;
     };
 }

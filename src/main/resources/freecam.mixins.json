@@ -17,7 +17,8 @@
     "InGameHudMixin",
     "LivingEntityMixin",
     "MinecraftClientMixin",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "accessors.BooleanListEntryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
