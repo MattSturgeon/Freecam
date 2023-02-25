@@ -16,10 +16,10 @@ import java.util.List;
         System.err.println("Found match (transformer): " + field.getName());
         return list;
     };
-    GuiProvider provider = (s, field, o, o1, guiRegistryAccess) -> {
+    GuiProvider provider = (translationKey, field, o, o1, guiRegistryAccess) -> {
         System.err.println("Found match (provider): " + field.getName());
         try {
-            BooleanToggleBuilder builder = new BooleanToggleBuilder(Text.translatable("reset"), Text.translatable(s), field.getBoolean(o));
+            BooleanToggleBuilder builder = new BooleanToggleBuilder(Text.translatable("reset"), Text.translatable(translationKey), field.getBoolean(o));
             BooleanListEntry entry = builder.build();
 
             return List.of(entry);
