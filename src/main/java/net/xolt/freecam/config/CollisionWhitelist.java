@@ -2,23 +2,21 @@ package net.xolt.freecam.config;
 
 import net.minecraft.block.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CollisionWhitelist {
 
-    private static List<Class<? extends Block>> transparentWhitelist = new ArrayList<>();
-    private static List<Class<? extends Block>> openableWhitelist = new ArrayList<>();
+    private static final List<Class<? extends Block>> transparentWhitelist = List.of(
+            AbstractGlassBlock.class,
+            PaneBlock.class,
+            BarrierBlock.class
+    );
 
-    static {
-        transparentWhitelist.add(AbstractGlassBlock.class);
-        transparentWhitelist.add(PaneBlock.class);
-        transparentWhitelist.add(BarrierBlock.class);
-
-        openableWhitelist.add(FenceGateBlock.class);
-        openableWhitelist.add(DoorBlock.class);
-        openableWhitelist.add(TrapdoorBlock.class);
-    }
+    private static final List<Class<? extends Block>> openableWhitelist = List.of(
+            FenceGateBlock.class,
+            DoorBlock.class,
+            TrapdoorBlock.class
+    );
 
     public static boolean isTransparent(Block block) {
         return isMatch(block, transparentWhitelist);
