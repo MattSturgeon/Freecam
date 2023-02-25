@@ -6,9 +6,12 @@ import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 import me.shedaniel.clothconfig2.impl.builders.BooleanToggleBuilder;
 import net.minecraft.text.Text;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-public @interface ListenableConfigEntry {
+@Retention(RetentionPolicy.RUNTIME)
+@interface ListenableConfigEntry {
     GuiTransformer transformer = (list, translationKey, field, o, o1, guiRegistryAccess) -> {
         System.err.println("Found match (transformer): " + field.getName());
         return list;
