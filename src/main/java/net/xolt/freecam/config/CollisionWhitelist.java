@@ -1,4 +1,4 @@
-package net.xolt.freecam.util;
+package net.xolt.freecam.config;
 
 import net.minecraft.block.*;
 

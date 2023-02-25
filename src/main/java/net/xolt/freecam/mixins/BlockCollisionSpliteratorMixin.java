@@ -12,7 +12,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
-import net.xolt.freecam.util.CollisionWhitelist;
+import net.xolt.freecam.config.CollisionWhitelist;
 import net.xolt.freecam.util.FreeCamera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
