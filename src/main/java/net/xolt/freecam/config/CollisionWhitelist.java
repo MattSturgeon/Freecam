@@ -2,17 +2,18 @@ package net.xolt.freecam.config;
 
 import net.minecraft.block.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public class CollisionWhitelist {
 
-    private static final List<Class<? extends Block>> transparentWhitelist = List.of(
+    private static final Collection<Class<? extends Block>> transparentWhitelist = List.of(
             AbstractGlassBlock.class,
             PaneBlock.class,
             BarrierBlock.class
     );
 
-    private static final List<Class<? extends Block>> openableWhitelist = List.of(
+    private static final Collection<Class<? extends Block>> openableWhitelist = List.of(
             FenceGateBlock.class,
             DoorBlock.class,
             TrapdoorBlock.class
@@ -26,7 +27,7 @@ public class CollisionWhitelist {
         return isMatch(block, openableWhitelist);
     }
 
-    private static boolean isMatch(Block block, List<Class<? extends Block>> whitelist) {
+    private static boolean isMatch(Block block, Collection<Class<? extends Block>> whitelist) {
         return whitelist.stream().anyMatch(blockClass -> blockClass.isInstance(block));
     }
 }
