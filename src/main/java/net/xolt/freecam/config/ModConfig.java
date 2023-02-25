@@ -4,6 +4,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.gui.registry.GuiRegistry;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 
@@ -18,6 +19,9 @@ public class ModConfig implements ConfigData {
     public static void init() {
         AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
         INSTANCE = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        GuiRegistry registry = AutoConfig.getGuiRegistry(ModConfig.class);
+        registry.registerAnnotationProvider(ListenableConfigEntry.provider, ListenableConfigEntry.class);
+        registry.registerAnnotationTransformer(ListenableConfigEntry.transformer, ListenableConfigEntry.class);
     }
 
     @ConfigEntry.Gui.Tooltip
@@ -45,6 +49,7 @@ public class ModConfig implements ConfigData {
     public boolean ignoreOpenableCollision = true;
 
     @ConfigEntry.Gui.Tooltip
+    @ListenableConfigEntry
     public boolean ignoreAllCollision = true;
 
     @ConfigEntry.Gui.Tooltip
