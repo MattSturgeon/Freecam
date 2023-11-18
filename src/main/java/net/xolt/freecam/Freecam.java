@@ -13,6 +13,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.xolt.freecam.config.ModConfig;
+import net.xolt.freecam.gui.JumpToScreen;
 import net.xolt.freecam.util.FreeCamera;
 import net.xolt.freecam.util.FreecamPosition;
 import org.lwjgl.glfw.GLFW;
@@ -22,10 +23,12 @@ import java.util.HashMap;
 public class Freecam implements ClientModInitializer {
 
     public static final MinecraftClient MC = MinecraftClient.getInstance();
+    public static final String ID = "freecam";
 
     private static KeyBinding freecamBind;
     private static KeyBinding playerControlBind;
     private static KeyBinding tripodResetBind;
+    private static KeyBinding jumpToBind;
     private static KeyBinding configGuiBind;
     private static boolean freecamEnabled = false;
     private static boolean tripodEnabled = false;
@@ -47,6 +50,8 @@ public class Freecam implements ClientModInitializer {
                 "key.freecam.playerControl", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.freecam.freecam"));
         tripodResetBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.freecam.tripodReset", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.freecam.freecam"));
+        jumpToBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.freecam.jumpTo", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, "category.freecam.freecam"));
         configGuiBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.freecam.configGui", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.freecam.freecam"));
 
@@ -74,6 +79,10 @@ public class Freecam implements ClientModInitializer {
 
             while (playerControlBind.wasPressed()) {
                 switchControls();
+            }
+
+            while (jumpToBind.wasPressed()) {
+                MC.setScreen(new JumpToScreen());
             }
 
             while (configGuiBind.wasPressed()) {
