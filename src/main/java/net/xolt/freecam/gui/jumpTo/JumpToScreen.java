@@ -31,7 +31,7 @@ public class JumpToScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BUTTON_ROW;
+        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BUTTON_ROW - 2;
 
         if (this.initialized) {
             this.list.updateSize(this.width, this.height, LIST_TOP, listBottom);
@@ -40,7 +40,7 @@ public class JumpToScreen extends Screen {
             this.list = new ListWidget(this, this.client, this.width, this.height, LIST_TOP, listBottom, LIST_ITEM_HEIGHT);
         }
 
-        int innerWidth = this.list.getRowWidth();
+        int innerWidth = GUI_WIDTH - 10;
         int innerX = (this.width - innerWidth) / 2;
 
         this.addDrawableChild(this.list);
