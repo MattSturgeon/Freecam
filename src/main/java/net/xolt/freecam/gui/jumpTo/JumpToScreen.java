@@ -7,6 +7,7 @@ import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.text.Text;
+import net.xolt.freecam.util.FreeCamera;
 
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +111,7 @@ public class JumpToScreen extends Screen {
     public void updateEntries() {
         List<ListEntry> playerEntries = client.world.getPlayers()
                 .stream()
+                .filter(player -> !(player instanceof FreeCamera))
                 // TODO search filter
                 // TODO sort
                 .map(this.playerEntryCache::createOrUpdate)
