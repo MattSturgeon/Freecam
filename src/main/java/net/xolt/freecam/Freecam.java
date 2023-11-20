@@ -108,6 +108,16 @@ public class Freecam implements ClientModInitializer {
         }
     }
 
+    public static void jumpTo(FreecamPosition position) {
+        // FIXME refactor to avoid incorrect notifications
+        if (freecamEnabled || tripodEnabled) {
+            toggle();
+        }
+
+        onEnableFreecam(position);
+        freecamEnabled = !freecamEnabled;
+    }
+
     private static void toggleTripod(Integer keyCode) {
         if (keyCode == null) {
             return;
@@ -190,8 +200,12 @@ public class Freecam implements ClientModInitializer {
     }
 
     private static void onEnableFreecam() {
+        onEnableFreecam(FreecamPosition.getSwimmingPosition(MC.player));
+    }
+
+    private static void onEnableFreecam(FreecamPosition position) {
         onEnable();
-        freeCamera = new FreeCamera(-420);
+        freeCamera = new FreeCamera(-420, position);
         freeCamera.applyPerspective(ModConfig.INSTANCE.visual.perspective, ModConfig.INSTANCE.collision.alwaysCheck || !ModConfig.INSTANCE.collision.ignoreAll);
         freeCamera.spawn();
         MC.setCameraEntity(freeCamera);

@@ -54,5 +54,6 @@ public class PlayerListEntry extends ListEntry {
 
     public void update(PlayerEntity player) {
         // TODO update location of player
+        this.position = FreecamPosition.getSwimmingPosition(player);
     }
 }

@@ -79,4 +79,9 @@ public class FreecamPosition {
     public ChunkPos getChunkPos() {
         return new ChunkPos((int) (x / 16), (int) (z / 16));
     }
+
+    @Override
+    public String toString() {
+        return "x: %f, y: %f, z: %f, yaw: %f, pitch: %f, pose: %s".formatted(this.x, this.y, this.z, this.yaw, this.pitch, this.pose.name());
+    }
 }
