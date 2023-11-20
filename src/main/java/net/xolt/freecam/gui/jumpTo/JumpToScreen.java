@@ -16,9 +16,8 @@ public class JumpToScreen extends Screen {
     private static final int GUI_FRAME = 8;
     private static final int GUI_WIDTH = 236;
     private static final int GUI_TOP = 50;
-    private static final int LIST_TOP = GUI_TOP + GUI_FRAME * 3;
+    private static final int LIST_TOP = GUI_TOP + 24;
     private static final int LIST_ITEM_HEIGHT = 36;
-
 
     private PlayerEntryCache playerEntryCache;
     private ListWidget list;
@@ -50,10 +49,8 @@ public class JumpToScreen extends Screen {
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderBackground(context, mouseX, mouseY, delta);
-        int x = (this.width - GUI_WIDTH + 4) / 2;
-        int ctrHeight = this.getScreenHeight();
-
-        BackgroundTexture.render(context, x, GUI_TOP, GUI_WIDTH, ctrHeight);
+        int left = (this.width - GUI_WIDTH) / 2;
+        BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getScreenHeight());
     }
 
     @Override
@@ -64,13 +61,13 @@ public class JumpToScreen extends Screen {
         }
     }
 
-    // GUI height excluding frame
+    // GUI height
     private int getScreenHeight() {
         return Math.max(52, this.height - (GUI_TOP *2));
     }
 
     private int getListBottom() {
-        return GUI_TOP  + this.getScreenHeight() - GUI_FRAME;
+        return GUI_TOP + this.getScreenHeight() - GUI_FRAME;
     }
 
     @Override

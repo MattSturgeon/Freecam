@@ -5,16 +5,19 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.ColorHelper;
 import net.xolt.freecam.util.FreecamPosition;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.GRAY_COLOR;
-import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.WHITE_COLOR;
-
 public class PlayerListEntry extends ListEntry {
+    public static final int BLACK_COLOR = ColorHelper.Argb.getArgb(190, 0, 0, 0);
+    public static final int GRAY_COLOR = ColorHelper.Argb.getArgb(255, 74, 74, 74);
+    public static final int DARK_GRAY_COLOR = ColorHelper.Argb.getArgb(255, 48, 48, 48);
+    public static final int WHITE_COLOR = ColorHelper.Argb.getArgb(255, 255, 255, 255);
+    public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
     private final @Nullable Supplier<SkinTextures> skinSupplier;
     private final String name;
@@ -29,7 +32,9 @@ public class PlayerListEntry extends ListEntry {
     }
 
     @Override
-    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+    public void render(DrawContext context, int index, int y, int x, int fullEntryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        // We are passed a reduced entryHeight but the full entryWidth...
+        int entryWidth = fullEntryWidth - 4;
         int padding = 4;
         int skinSize = 24;
         boolean hasSkin = this.skinSupplier != null;
