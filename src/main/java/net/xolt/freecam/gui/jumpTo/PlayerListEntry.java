@@ -1,9 +1,8 @@
-package net.xolt.freecam.gui;
+package net.xolt.freecam.gui.jumpTo;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
 import net.xolt.freecam.util.FreecamPosition;
@@ -15,18 +14,18 @@ import java.util.function.Supplier;
 import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.GRAY_COLOR;
 import static net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListEntry.WHITE_COLOR;
 
-public class JumpToPlayerListEntry extends JumpToListEntry {
+public class PlayerListEntry extends ListEntry {
 
     private final @Nullable Supplier<SkinTextures> skinSupplier;
     private final String name;
     private final UUID uuid;
 
-    public JumpToPlayerListEntry(MinecraftClient client, JumpToScreen screen, PlayerEntity player) {
+    public PlayerListEntry(MinecraftClient client, JumpToScreen screen, PlayerEntity player) {
         super(client, screen, FreecamPosition.getSwimmingPosition(player));
         this.uuid = player.getUuid();
         this.name = player.getEntityName();
-        PlayerListEntry playerListEntry = this.client.player.networkHandler.getPlayerListEntry(this.uuid);
-        this.skinSupplier = playerListEntry == null ? null : playerListEntry::getSkinTextures;
+        var networkPlayerEntry = this.client.player.networkHandler.getPlayerListEntry(this.uuid);
+        this.skinSupplier = networkPlayerEntry == null ? null : networkPlayerEntry::getSkinTextures;
     }
 
     @Override
@@ -48,11 +47,7 @@ public class JumpToPlayerListEntry extends JumpToListEntry {
         context.drawText(this.client.textRenderer, this.name, textX, textY, WHITE_COLOR, false);
     }
 
-    @Override
-    public boolean matches(JumpToListEntry entry) {
-        if (entry instanceof JumpToPlayerListEntry pEntry) {
-            return pEntry.uuid.equals(this.uuid);
-        }
-        return false;
+    public void update(PlayerEntity player) {
+        // TODO update location of player
     }
 }

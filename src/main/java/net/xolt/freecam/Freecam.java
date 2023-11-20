@@ -13,7 +13,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.xolt.freecam.config.ModConfig;
-import net.xolt.freecam.gui.JumpToScreen;
+import net.xolt.freecam.gui.jumpTo.JumpToScreen;
 import net.xolt.freecam.util.FreeCamera;
 import net.xolt.freecam.util.FreecamPosition;
 import org.lwjgl.glfw.GLFW;

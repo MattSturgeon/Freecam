@@ -1,4 +1,4 @@
-package net.xolt.freecam.gui;
+package net.xolt.freecam.gui.jumpTo;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -6,13 +6,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.xolt.freecam.util.FreecamPosition;
 
-public abstract class JumpToListEntry extends AlwaysSelectedEntryListWidget.Entry<JumpToListEntry> {
+public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<ListEntry> {
     protected final MinecraftClient client;
     protected final JumpToScreen screen;
     protected final FreecamPosition position;
     private long time;
 
-    protected JumpToListEntry(MinecraftClient client, JumpToScreen screen, FreecamPosition position) {
+    protected ListEntry(MinecraftClient client, JumpToScreen screen, FreecamPosition position) {
         this.client = client;
         this.screen = screen;
         this.position = position;
@@ -39,7 +39,4 @@ public abstract class JumpToListEntry extends AlwaysSelectedEntryListWidget.Entr
 //        this.position;
         System.out.println("jumping");
     }
-
-    // Fuzzy match; does this entry refer to the same thing, even if the exact location has changed
-    public abstract boolean matches(JumpToListEntry entry);
 }
