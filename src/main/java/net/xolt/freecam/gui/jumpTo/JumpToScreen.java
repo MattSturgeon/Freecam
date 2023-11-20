@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class JumpToScreen extends Screen {
-    private static final int GUI_BOTTOM_FRAME = 8;
     private static final int GUI_WIDTH = 236;
     private static final int GUI_TOP = 50;
     private static final int LIST_TOP = GUI_TOP + 24;
@@ -32,7 +31,7 @@ public class JumpToScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BOTTOM_FRAME - GUI_BUTTON_ROW;
+        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BUTTON_ROW;
 
         if (this.initialized) {
             this.list.updateSize(this.width, this.height, LIST_TOP, listBottom);
@@ -50,14 +49,12 @@ public class JumpToScreen extends Screen {
         SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom, innerWidth, 0);
         positioner.getMainPositioner()
                 .alignBottom()
-                .alignRight()
-                .margin(0);
+                .alignRight();
 
         DirectionalLayoutWidget layout = positioner.add(DirectionalLayoutWidget.horizontal());
         layout.getMainPositioner()
                 .alignBottom()
-                .marginX(2)
-                .marginY(0);
+                .margin(2);
 
         layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.close()).width(48).build());
         this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump()).width(48).build());
