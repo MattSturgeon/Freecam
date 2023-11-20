@@ -2,6 +2,7 @@ package net.xolt.freecam.gui.jumpTo;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,6 +27,12 @@ public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
                     .findAny()
                     .ifPresent(this::setSelected);
         }
+    }
+
+    @Override
+    public void setSelected(@Nullable ListEntry entry) {
+        super.setSelected(entry);
+        this.screen.updateButtonState();
     }
 
     @Override

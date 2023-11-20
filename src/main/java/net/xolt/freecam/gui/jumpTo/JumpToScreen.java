@@ -23,7 +23,6 @@ public class JumpToScreen extends Screen {
     private ListWidget list;
     private boolean initialized;
     private ButtonWidget buttonJump;
-    private ButtonWidget buttonBack;
 
     public JumpToScreen() {
         super(Text.translatable("gui.freecam.jumpTo.title"));
@@ -59,7 +58,7 @@ public class JumpToScreen extends Screen {
                 .marginX(2)
                 .marginY(0);
 
-        this.buttonBack = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.client.setScreen(null)).width(48).build());
+        layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.client.setScreen(null)).width(48).build());
         this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump()).width(48).build());
 
         positioner.refreshPositions();
@@ -125,8 +124,9 @@ public class JumpToScreen extends Screen {
         this.updateButtonState();
     }
 
-    private void updateButtonState() {
-        // TODO enable/disable buttons based on selected entry
+    public void updateButtonState() {
+        ListEntry selected = this.list.getSelectedOrNull();
+        this.buttonJump.active = selected != null;
     }
 
     public void jump() {

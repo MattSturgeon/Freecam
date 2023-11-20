@@ -12,6 +12,7 @@
   "msg.freecam.tripodReset": "Reset camera #",
   "gui.freecam.jumpTo.title": "Jump Freecam To...",
   "gui.freecam.jumpTo.button.jump": "Jump",
+  "gui.freecam.jumpTo.button.back": "Back",
   "text.autoconfig.freecam.option.movement": "Movement Options",
   "text.autoconfig.freecam.option.movement.@Tooltip": "How the camera moves.",
   "text.autoconfig.freecam.option.movement.flightMode": "Flight Mode",
