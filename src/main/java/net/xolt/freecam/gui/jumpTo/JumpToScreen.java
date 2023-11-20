@@ -2,7 +2,6 @@ package net.xolt.freecam.gui.jumpTo;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
@@ -13,16 +12,18 @@ import java.util.List;
 import java.util.Optional;
 
 public class JumpToScreen extends Screen {
-    private static final int GUI_FRAME = 8;
+    private static final int GUI_BOTTOM_FRAME = 8;
     private static final int GUI_WIDTH = 236;
     private static final int GUI_TOP = 50;
     private static final int LIST_TOP = GUI_TOP + 24;
     private static final int LIST_ITEM_HEIGHT = 36;
+    private static final int GUI_BUTTON_ROW = 24;
 
     private PlayerEntryCache playerEntryCache;
     private ListWidget list;
     private boolean initialized;
     private ButtonWidget buttonJump;
+    private ButtonWidget buttonBack;
 
     public JumpToScreen() {
         super(Text.translatable("gui.freecam.jumpTo.title"));
@@ -31,18 +32,39 @@ public class JumpToScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BOTTOM_FRAME - GUI_BUTTON_ROW;
+
         if (this.initialized) {
-            this.list.updateSize(this.width, this.height, LIST_TOP, this.getListBottom());
+            this.list.updateSize(this.width, this.height, LIST_TOP, listBottom);
         } else {
             this.playerEntryCache = new PlayerEntryCache(this.client, this);
-            this.list = new ListWidget(this, this.client, this.width, this.height, LIST_TOP, this.getListBottom(), LIST_ITEM_HEIGHT);
+            this.list = new ListWidget(this, this.client, this.width, this.height, LIST_TOP, listBottom, LIST_ITEM_HEIGHT);
         }
-        this.addSelectableChild(this.list);
-        this.buttonJump = this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump()).width(48).build());
-        DirectionalLayoutWidget layout = DirectionalLayoutWidget.vertical();
-        AxisGridWidget grid = layout.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
-        grid.add(this.buttonJump);
-        SimplePositioningWidget.setPos(layout, 0, this.height - this.getListBottom(), this.width, this.getListBottom() - 20);
+
+        int innerWidth = this.list.getRowWidth();
+        int innerX = (this.width - innerWidth) / 2;
+
+        this.addDrawableChild(this.list);
+        this.setInitialFocus(this.list);
+
+        SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom, innerWidth, 0);
+        positioner.getMainPositioner()
+                .alignBottom()
+                .alignRight()
+                .margin(0);
+
+        DirectionalLayoutWidget layout = positioner.add(DirectionalLayoutWidget.horizontal());
+        layout.getMainPositioner()
+                .alignBottom()
+                .marginX(2)
+                .marginY(0);
+
+        this.buttonBack = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.client.setScreen(null)).width(48).build());
+        this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump()).width(48).build());
+
+        positioner.refreshPositions();
+        positioner.forEachChild(this::addDrawableChild);
+
         this.initialized = true;
     }
 
@@ -50,24 +72,12 @@ public class JumpToScreen extends Screen {
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
-        BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getScreenHeight());
-    }
-
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-        if (!this.list.children().isEmpty()) {
-            this.list.render(context, mouseX, mouseY, delta);
-        }
+        BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
     }
 
     // GUI height
-    private int getScreenHeight() {
+    private int getGuiHeight() {
         return Math.max(52, this.height - (GUI_TOP *2));
-    }
-
-    private int getListBottom() {
-        return GUI_TOP + this.getScreenHeight() - GUI_FRAME;
     }
 
     @Override
@@ -120,7 +130,6 @@ public class JumpToScreen extends Screen {
     }
 
     public void jump() {
-        // TODO jump to selected
         Optional.ofNullable(this.list.getSelectedOrNull())
                 .ifPresent(ListEntry::jump);
     }
