@@ -110,11 +110,7 @@ public class Freecam implements ClientModInitializer {
         }
     }
 
-    public static void jumpTo(FreecamPosition position) {
-        jumpTo(position, position.coords());
-    }
-
-    public static void jumpTo(FreecamPosition position, String name) {
+    public static void jumpTo(FreecamPosition position, String name, boolean perspective) {
         long notifDelay = tripodEnabled || !freecamEnabled
                 ? 1500 : 1;
 
@@ -127,7 +123,9 @@ public class Freecam implements ClientModInitializer {
         }
 
         freeCamera.applyPosition(position);
-        // TODO optionally applyPerspective
+        if (perspective) {
+            freeCamera.applyPerspective(ModConfig.INSTANCE.hidden.jumpToPerspective, checkInitialCollision());
+        }
 
         if (ModConfig.INSTANCE.notification.notifyJumpTo) {
             new Timer().schedule(new TimerTask() {
@@ -229,7 +227,7 @@ public class Freecam implements ClientModInitializer {
     private static void onEnableFreecam(FreecamPosition position) {
         onEnable();
         freeCamera = new FreeCamera(-420, position);
-        freeCamera.applyPerspective(ModConfig.INSTANCE.visual.perspective, ModConfig.INSTANCE.collision.alwaysCheck || !ModConfig.INSTANCE.collision.ignoreAll);
+        freeCamera.applyPerspective(ModConfig.INSTANCE.visual.perspective, checkInitialCollision());
         freeCamera.spawn();
         MC.setCameraEntity(freeCamera);
 
@@ -314,6 +312,10 @@ public class Freecam implements ClientModInitializer {
                 break;
         }
         return result;
+    }
+
+    private static boolean checkInitialCollision() {
+        return ModConfig.INSTANCE.collision.alwaysCheck || !ModConfig.INSTANCE.collision.ignoreAll;
     }
 
     public static KeyBinding getFreecamBind() {

@@ -56,4 +56,9 @@ public class PlayerListEntry extends ListEntry {
         // TODO update location of player
         this.position = FreecamPosition.getSwimmingPosition(player);
     }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
 }

@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.xolt.freecam.Freecam;
 import net.xolt.freecam.util.FreecamPosition;
 
 public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<ListEntry> {
@@ -34,7 +33,9 @@ public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<List
         return null;
     }
 
-    public void jump() {
-        Freecam.jumpTo(this.position);
+    public FreecamPosition getPosition() {
+        return this.position;
     }
+
+    public abstract String getName();
 }

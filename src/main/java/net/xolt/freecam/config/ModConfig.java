@@ -6,6 +6,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
+import net.minecraft.text.Text;
 
 import static me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.EnumHandler.EnumDisplayOption;
 
@@ -104,6 +105,12 @@ public class ModConfig implements ConfigData {
         public boolean notifyJumpTo = true;
     }
 
+    @ConfigEntry.Gui.Excluded
+    public Hidden hidden = new Hidden();
+    public static class Hidden {
+        public Perspective jumpToPerspective = Perspective.THIRD_PERSON;
+    }
+
     public enum FlightMode implements SelectionListEntry.Translatable {
         CREATIVE("text.autoconfig.freecam.option.movement.flightMode.creative"),
         DEFAULT("text.autoconfig.freecam.option.movement.flightMode.default");
@@ -135,18 +142,25 @@ public class ModConfig implements ConfigData {
     }
 
     public enum Perspective implements SelectionListEntry.Translatable {
-        FIRST_PERSON("text.autoconfig.freecam.option.visual.perspective.firstPerson"),
-        THIRD_PERSON("text.autoconfig.freecam.option.visual.perspective.thirdPerson"),
-        THIRD_PERSON_MIRROR("text.autoconfig.freecam.option.visual.perspective.thirdPersonMirror"),
-        INSIDE("text.autoconfig.freecam.option.visual.perspective.inside");
+        FIRST_PERSON("firstPerson"),
+        THIRD_PERSON("thirdPerson"),
+        THIRD_PERSON_MIRROR("thirdPersonMirror"),
+        INSIDE("inside");
 
-        private final String name;
+        private final String key;
+        private final Text name;
 
         Perspective(String name) {
-            this.name = name;
+            this.key = "text.autoconfig.freecam.option.visual.perspective." + name;
+            this.name = Text.translatable(this.key);
         }
 
+        @Override
         public String getKey() {
+            return key;
+        }
+
+        public Text getName() {
             return name;
         }
     }

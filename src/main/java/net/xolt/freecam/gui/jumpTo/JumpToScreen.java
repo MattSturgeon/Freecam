@@ -1,12 +1,17 @@
 package net.xolt.freecam.gui.jumpTo;
 
+import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.text.Text;
+import net.xolt.freecam.Freecam;
+import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.util.FreeCamera;
 
 import java.util.List;
@@ -20,9 +25,11 @@ public class JumpToScreen extends Screen {
     private static final int GUI_BUTTON_ROW = 24;
 
     private PlayerEntryCache playerEntryCache;
+    private Tab tab = Tab.PLAYER;
     private ListWidget list;
     private boolean initialized;
     private ButtonWidget buttonJump;
+    private CyclingButtonWidget<ModConfig.Perspective> buttonPerspective;
 
     public JumpToScreen() {
         super(Text.translatable("gui.freecam.jumpTo.title"));
@@ -57,7 +64,24 @@ public class JumpToScreen extends Screen {
                 .margin(2);
 
         layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.close()).width(48).build());
-        this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump()).width(48).build());
+        this.buttonPerspective = switch (tab) {
+            case COORDS -> null;
+            case PLAYER -> layout.add(CyclingButtonWidget
+                    .builder(ModConfig.Perspective::getName)
+                    .values(ModConfig.Perspective.values())
+                    .initially(ModConfig.INSTANCE.hidden.jumpToPerspective)
+                    .tooltip(value -> Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.perspective.@Tooltip", value)))
+                    .omitKeyText()
+                    .build(0, 0, 80, 20, null, (button, value) -> {
+                        ModConfig.INSTANCE.hidden.jumpToPerspective = value;
+                        AutoConfig.getConfigHolder(ModConfig.class).save();
+                    }));
+        };
+        this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump())
+                        .tooltip(Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.jump.@Tooltip")))
+                        .width(48)
+                        .build());
+
 
         positioner.refreshPositions();
         positioner.forEachChild(this::addDrawableChild);
@@ -106,16 +130,19 @@ public class JumpToScreen extends Screen {
     }
 
     public void updateEntries() {
-        List<ListEntry> playerEntries = client.world.getPlayers()
-                .stream()
-                .filter(player -> !(player instanceof FreeCamera))
-                // TODO search filter
-                // TODO sort
-                .map(this.playerEntryCache::createOrUpdate)
-                .map(ListEntry.class::cast)
-                .toList();
+        List<ListEntry> entries = switch (tab) {
+            case PLAYER -> client.world.getPlayers()
+                    .stream()
+                    .filter(player -> !(player instanceof FreeCamera))
+                    // TODO search filter
+                    // TODO sort
+                    .map(this.playerEntryCache::createOrUpdate)
+                    .map(ListEntry.class::cast)
+                    .toList();
+            case COORDS -> null; // TODO
+        };
 
-        this.list.updateEntries(playerEntries);
+        this.list.updateEntries(entries);
     }
 
     public void select(ListEntry entry) {
@@ -126,13 +153,19 @@ public class JumpToScreen extends Screen {
     public void updateButtonState() {
         ListEntry selected = this.list.getSelectedOrNull();
         this.buttonJump.active = selected != null;
+        this.buttonPerspective.active = selected instanceof PlayerListEntry;
     }
 
     public void jump() {
         Optional.ofNullable(this.list.getSelectedOrNull())
                 .ifPresent(listEntry -> {
+                    boolean perspective = this.buttonPerspective != null && this.buttonPerspective.active;
                     this.close();
-                    listEntry.jump();
+                    Freecam.jumpTo(listEntry.getPosition(), listEntry.getName(), perspective);
                 });
+    }
+
+    private enum Tab {
+        PLAYER, COORDS;
     }
 }
