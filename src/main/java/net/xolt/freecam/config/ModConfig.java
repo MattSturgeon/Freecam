@@ -127,17 +127,17 @@ public class ModConfig implements ConfigData {
     }
 
     public enum InteractionMode implements SelectionListEntry.Translatable {
-        CAMERA("text.autoconfig.freecam.option.utility.interactionMode.camera"),
-        PLAYER("text.autoconfig.freecam.option.utility.interactionMode.player");
+        CAMERA("camera"),
+        PLAYER("player");
 
-        private final String name;
+        private final String key;
 
         InteractionMode(String name) {
-            this.name = name;
+            this.key = "text.autoconfig.freecam.option.utility.interactionMode." + name;
         }
 
         public String getKey() {
-            return name;
+            return key;
         }
     }
 
