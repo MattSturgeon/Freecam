@@ -326,6 +326,10 @@ public class Freecam implements ClientModInitializer {
         return tripodResetBind;
     }
 
+    public static KeyBinding getJumpToBind() {
+        return jumpToBind;
+    }
+
     public static boolean disableNextTick() {
         return disableNextTick;
     }

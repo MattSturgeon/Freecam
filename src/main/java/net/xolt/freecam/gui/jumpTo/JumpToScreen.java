@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.util.FreeCamera;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +60,7 @@ public class JumpToScreen extends Screen {
         int innerX = (this.width - innerWidth) / 2;
 
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, 59,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT){
+        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, GUI_TOP + 9,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT){
 
             @Override
             protected MutableText getNarrationMessage() {
@@ -119,12 +120,12 @@ public class JumpToScreen extends Screen {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
         BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
-        context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, 61, 12, 12);
+        context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, GUI_TOP + 11, 12, 12);
     }
 
     // GUI height
     private int getGuiHeight() {
-        return Math.max(52, this.height - (GUI_TOP *2));
+        return Math.max(52, this.height - (GUI_TOP * 2));
     }
 
     @Override
@@ -137,17 +138,27 @@ public class JumpToScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (super.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
+        if (this.searchBox.isFocused()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                this.focusOn(null);
+                return true;
+            }
+        } else {
+            if (Freecam.getJumpToBind().matchesKey(keyCode, scanCode)) {
+                this.close();
+                return true;
+            }
         }
         if (this.list.getSelectedOrNull() != null) {
             if (KeyCodes.isToggle(keyCode)) {
                 this.jump();
                 return true;
             }
-            return this.list.keyPressed(keyCode, scanCode, modifiers);
+            if (this.list.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
         }
-        return false;
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
