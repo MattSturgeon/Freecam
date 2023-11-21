@@ -100,6 +100,8 @@ public class ModConfig implements ConfigData {
 
         @ConfigEntry.Gui.Tooltip
         public boolean notifyTripod = true;
+        @ConfigEntry.Gui.Tooltip
+        public boolean notifyJumpTo = true;
     }
 
     public enum FlightMode implements SelectionListEntry.Translatable {

@@ -19,6 +19,8 @@ import net.xolt.freecam.util.FreecamPosition;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Freecam implements ClientModInitializer {
 
@@ -109,13 +111,34 @@ public class Freecam implements ClientModInitializer {
     }
 
     public static void jumpTo(FreecamPosition position) {
-        // FIXME refactor to avoid incorrect notifications
-        if (freecamEnabled || tripodEnabled) {
+        jumpTo(position, position.coords());
+    }
+
+    public static void jumpTo(FreecamPosition position, String name) {
+        long notifDelay = tripodEnabled || !freecamEnabled
+                ? 1500 : 1;
+
+        if (tripodEnabled) {
+            toggleTripod(activeTripod);
+        }
+
+        if (!freecamEnabled) {
             toggle();
         }
 
-        onEnableFreecam(position);
-        freecamEnabled = !freecamEnabled;
+        freeCamera.applyPosition(position);
+        // TODO optionally applyPerspective
+
+        if (ModConfig.INSTANCE.notification.notifyJumpTo) {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (freecamEnabled) {
+                        MC.player.sendMessage(Text.translatable("msg.freecam.jumpTo", name), true);
+                    }
+                }
+            }, notifDelay);
+        }
     }
 
     private static void toggleTripod(Integer keyCode) {

@@ -10,6 +10,7 @@
   "msg.freecam.openTripod": "Opening camera #",
   "msg.freecam.closeTripod": "Closing camera #",
   "msg.freecam.tripodReset": "Reset camera #",
+  "msg.freecam.jumpTo": "Freecam jumped to %s.",
   "gui.freecam.jumpTo.title": "Jump Freecam To...",
   "gui.freecam.jumpTo.button.jump": "Jump",
   "gui.freecam.jumpTo.button.back": "Back",
@@ -70,5 +71,7 @@
   "text.autoconfig.freecam.option.notification.notifyFreecam": "Freecam Notifications",
   "text.autoconfig.freecam.option.notification.notifyFreecam.@Tooltip": "Notifies you when entering/exiting freecam.",
   "text.autoconfig.freecam.option.notification.notifyTripod": "Tripod Notifications",
-  "text.autoconfig.freecam.option.notification.notifyTripod.@Tooltip": "Notifies you when entering/exiting tripod cameras."
+  "text.autoconfig.freecam.option.notification.notifyTripod.@Tooltip": "Notifies you when entering/exiting tripod cameras.",
+  "text.autoconfig.freecam.option.notification.notifyJumpTo": "Jump To Notifications",
+  "text.autoconfig.freecam.option.notification.notifyJumpTo.@Tooltip": "Notifies you when jumping the cameras to something."
 }

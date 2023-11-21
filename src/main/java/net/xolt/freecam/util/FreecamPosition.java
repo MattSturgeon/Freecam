@@ -6,6 +6,9 @@ import net.minecraft.util.math.ChunkPos;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class FreecamPosition {
     public double x;
     public double y;
@@ -80,8 +83,8 @@ public class FreecamPosition {
         return new ChunkPos((int) (x / 16), (int) (z / 16));
     }
 
-    @Override
-    public String toString() {
-        return "x: %f, y: %f, z: %f, yaw: %f, pitch: %f, pose: %s".formatted(this.x, this.y, this.z, this.yaw, this.pitch, this.pose.name());
+    public String coords() {
+        NumberFormat fmt = new DecimalFormat("0.##");
+        return "x: %s, y: %s, z: %s".formatted(fmt.format(this.x), fmt.format(this.y), fmt.format(this.z));
     }
 }
