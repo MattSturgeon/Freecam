@@ -4,17 +4,18 @@ import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.input.KeyCodes;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.util.FreeCamera;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public class JumpToScreen extends Screen {
@@ -24,12 +25,19 @@ public class JumpToScreen extends Screen {
     private static final int LIST_ITEM_HEIGHT = 36;
     private static final int GUI_BUTTON_ROW = 24;
 
+    //FIXME do we need our own translation keys, or is this ok?
+    private static final Text SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+    static final Text EMPTY_SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
+    private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
+
     private PlayerEntryCache playerEntryCache;
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
     private boolean initialized;
     private ButtonWidget buttonJump;
     private CyclingButtonWidget<ModConfig.Perspective> buttonPerspective;
+    private TextFieldWidget searchBox;
+    private String currentSearch;
 
     public JumpToScreen() {
         super(Text.translatable("gui.freecam.jumpTo.title"));
@@ -50,14 +58,28 @@ public class JumpToScreen extends Screen {
         int innerWidth = GUI_WIDTH - 10;
         int innerX = (this.width - innerWidth) / 2;
 
-        this.addDrawableChild(this.list);
-        this.setInitialFocus(this.list);
+        String string = this.searchBox != null ? this.searchBox.getText() : "";
+        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, 59,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT){
+
+            @Override
+            protected MutableText getNarrationMessage() {
+                if (!JumpToScreen.this.searchBox.getText().isEmpty() && JumpToScreen.this.list.children().isEmpty()) {
+                    return super.getNarrationMessage().append(", ").append(EMPTY_SEARCH_TEXT);
+                }
+                return super.getNarrationMessage();
+            }
+        };
+        this.searchBox.setMaxLength(16);
+        this.searchBox.setVisible(true);
+        this.searchBox.setEditableColor(0xFFFFFF);
+        this.searchBox.setText(string);
+        this.searchBox.setPlaceholder(SEARCH_TEXT);
+        this.searchBox.setChangedListener(this::onSearchChange);
 
         SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom, innerWidth, 0);
         positioner.getMainPositioner()
                 .alignBottom()
                 .alignRight();
-
         DirectionalLayoutWidget layout = positioner.add(DirectionalLayoutWidget.horizontal());
         layout.getMainPositioner()
                 .alignBottom()
@@ -86,6 +108,9 @@ public class JumpToScreen extends Screen {
         positioner.refreshPositions();
         positioner.forEachChild(this::addDrawableChild);
 
+        List.of(this.searchBox, this.list).forEach(this::addDrawableChild);
+        this.setInitialFocus(this.list);
+
         this.initialized = true;
     }
 
@@ -94,6 +119,7 @@ public class JumpToScreen extends Screen {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
         BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
+        context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, 61, 12, 12);
     }
 
     // GUI height
@@ -134,7 +160,7 @@ public class JumpToScreen extends Screen {
             case PLAYER -> client.world.getPlayers()
                     .stream()
                     .filter(player -> !(player instanceof FreeCamera))
-                    // TODO search filter
+                    .filter(player -> this.matchesSearch(player.getEntityName()))
                     // TODO sort
                     .map(this.playerEntryCache::createOrUpdate)
                     .map(ListEntry.class::cast)
@@ -142,7 +168,24 @@ public class JumpToScreen extends Screen {
             case COORDS -> null; // TODO
         };
 
-        this.list.updateEntries(entries);
+        // FIXME is there a cheaper option than List.equals()?
+        if (!this.list.children().equals(entries)) {
+            this.list.updateEntries(entries);
+            this.updateButtonState();
+        }
+
+    }
+
+    private boolean matchesSearch(String string) {
+        return this.currentSearch == null || this.currentSearch.isEmpty()
+                || string.toLowerCase(Locale.ROOT).contains(this.currentSearch);
+    }
+
+    private void onSearchChange(String search) {
+        String newSearch = search.toLowerCase(Locale.ROOT);
+        if (!newSearch.equals(this.currentSearch)) {
+            this.currentSearch = newSearch;
+        }
     }
 
     public void select(ListEntry entry) {

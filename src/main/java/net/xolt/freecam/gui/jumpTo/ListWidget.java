@@ -20,13 +20,16 @@ public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
 
         this.replaceEntries(newEntries);
 
-        this.setSelected(this.getFirst());
-        if (selection != null) {
-            this.children().stream()
-                    .filter(selection::equals)
-                    .findAny()
-                    .ifPresent(this::setSelected);
+        // We only want to set the selection if the old selection is missing
+        if (selection == null || !this.children().contains(selection)) {
+            this.setSelected(this.getFirst());
         }
+    }
+
+    @Override
+    public @Nullable ListEntry getFirst() {
+        // Prevent IndexOutOfBoundsException
+        return this.children().isEmpty() ? null : super.getFirst();
     }
 
     @Override
