@@ -207,7 +207,6 @@ public class JumpToScreen extends Screen {
     public void updateButtonState() {
         ListEntry selected = this.list.getSelectedOrNull();
         this.buttonJump.active = selected != null;
-        this.buttonPerspective.active = selected instanceof PlayerListEntry;
     }
 
     public void jump() {
