@@ -5,6 +5,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
     private final JumpToScreen screen;
@@ -16,22 +17,9 @@ public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
     }
 
     public void updateEntries(List<ListEntry> newEntries) {
-        ListEntry selection = this.getSelectedOrNull();
-
+        ListEntry selection = migrateSelection(this.getSelectedOrNull(), newEntries, this.children());
         this.replaceEntries(newEntries);
-
-        // Reset the selection if the old selection is missing
-        if (selection == null || !this.children().contains(selection)) {
-            // TODO try to select the nearest neighbour
-            selection = this.getFirst();
-        }
         this.setSelected(selection);
-    }
-
-    @Override
-    public @Nullable ListEntry getFirst() {
-        // Prevent IndexOutOfBoundsException
-        return this.children().isEmpty() ? null : super.getFirst();
     }
 
     @Override
@@ -44,5 +32,57 @@ public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         ListEntry entry = this.getSelectedOrNull();
         return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private static @Nullable ListEntry migrateSelection(ListEntry selection, List<ListEntry> newEntries, List<ListEntry> oldEntries) {
+        // New list is empty, can't select anything
+        if (newEntries.isEmpty()) {
+            return null;
+        }
+
+        // No previous selection existed, nothing to check
+        if (selection == null) {
+            return newEntries.get(0);
+        }
+
+        int len = oldEntries.size();
+        int index = oldEntries.indexOf(selection);
+
+        // Helper function to check candidates
+        Predicate<Integer> check = i -> {
+            ListEntry entry = oldEntries.get(i);
+            return newEntries.contains(entry);
+        };
+
+        // Check if the previous selection is still present
+        if (index >= 0 && index < len && check.test(index)) {
+            return selection;
+        }
+
+        // Use a "nearest neighbor" style search when the selection is lost,
+        // to minimise GUI focus jumps and improve UX.
+        int dec = index;
+        int inc = index;
+        while (true) {
+            dec--;
+            inc++;
+
+            // Failure: out-of-bounds in both directions
+            // terminate the loop
+            if (dec < 0 && inc >= len) {
+                return newEntries.get(0);
+            }
+
+            // Check for a lower neighbor
+            if (dec >= 0 && check.test(dec)) {
+                return oldEntries.get(dec);
+            }
+
+            // Check for a higher neighbor
+            if (inc < len && check.test(inc)) {
+                return oldEntries.get(inc);
+            }
+
+        }
     }
 }
