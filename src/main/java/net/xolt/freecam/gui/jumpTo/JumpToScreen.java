@@ -177,7 +177,6 @@ public class JumpToScreen extends Screen {
         // Update only if the list has changed
         if (!Objects.equals(this.list.children(), entries)) {
             this.list.updateEntries(entries);
-            this.updateButtonState();
         }
     }
 
@@ -213,10 +212,7 @@ public class JumpToScreen extends Screen {
     }
 
     private void onSearchChange(String search) {
-        String newSearch = search.toLowerCase(Locale.ROOT);
-        if (!newSearch.equals(this.currentSearch)) {
-            this.currentSearch = newSearch;
-        }
+        this.currentSearch = search.toLowerCase(Locale.ROOT);
     }
 
     public void select(ListEntry entry) {

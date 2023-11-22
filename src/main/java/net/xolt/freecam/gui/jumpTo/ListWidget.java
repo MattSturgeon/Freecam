@@ -20,10 +20,12 @@ public class ListWidget extends AlwaysSelectedEntryListWidget<ListEntry> {
 
         this.replaceEntries(newEntries);
 
-        // We only want to set the selection if the old selection is missing
+        // Reset the selection if the old selection is missing
         if (selection == null || !this.children().contains(selection)) {
-            this.setSelected(this.getFirst());
+            // TODO try to select the nearest neighbour
+            selection = this.getFirst();
         }
+        this.setSelected(selection);
     }
 
     @Override
