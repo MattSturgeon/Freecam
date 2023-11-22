@@ -12,6 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
+import net.xolt.freecam.gui.NineSliceTexture;
 import net.xolt.freecam.util.FreeCamera;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,6 +26,8 @@ public class JumpToScreen extends Screen {
     private static final int LIST_ITEM_HEIGHT = 36;
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
     private static final Text SEARCH_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+    private static final NineSliceTexture JUMP_BACKGROUND = new NineSliceTexture(new Identifier(Freecam.ID, "textures/gui/jump_background.png"), 9, 9, 4);
+    private static final NineSliceTexture JUMP_LIST_BACKGROUND = new NineSliceTexture(new Identifier(Freecam.ID, "textures/gui/jump_list_background.png"), 3, 3, 1);
 
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
@@ -108,8 +111,8 @@ public class JumpToScreen extends Screen {
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
-        BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
-        ListBackgroundTexture.render(context, left + 7, LIST_TOP - 1, this.list.getRowWidth() + 2, this.getListHeight() + 2);
+        JUMP_BACKGROUND.draw(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
+        JUMP_LIST_BACKGROUND.draw(context, left + 7, LIST_TOP - 1, this.list.getRowWidth() + 2, this.getListHeight() + 2);
         context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, LIST_TOP + 3, 12, 12);
     }
 
