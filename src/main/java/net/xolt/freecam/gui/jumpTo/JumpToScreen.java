@@ -21,10 +21,8 @@ import java.util.stream.Collectors;
 public class JumpToScreen extends Screen {
     private static final int GUI_WIDTH = 236;
     private static final int GUI_TOP = 50;
-    private static final int LIST_TOP = GUI_TOP + 24;
+    private static final int LIST_TOP = GUI_TOP + 8;
     private static final int LIST_ITEM_HEIGHT = 36;
-    private static final int GUI_BUTTON_ROW = 24;
-
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
     private static final Text SEARCH_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 
@@ -43,19 +41,20 @@ public class JumpToScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        int listBottom = GUI_TOP + this.getGuiHeight() - GUI_BUTTON_ROW - 2;
+        int listTop = LIST_TOP + 16;
+        int listBottom = this.getListBottom();
 
         if (this.initialized) {
-            this.list.updateSize(this.width, this.height, LIST_TOP, listBottom);
+            this.list.updateSize(this.width, this.height, listTop, listBottom);
         } else {
-            this.list = new ListWidget(this, this.client, this.width, this.height, LIST_TOP, listBottom, LIST_ITEM_HEIGHT);
+            this.list = new ListWidget(this, this.client, this.width, this.height, listTop, listBottom, LIST_ITEM_HEIGHT);
         }
 
         int innerWidth = GUI_WIDTH - 10;
         int innerX = (this.width - innerWidth) / 2;
 
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, GUI_TOP + 9,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT);
+        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, LIST_TOP + 1,  this.list.getRowWidth() - 19, 15, SEARCH_TEXT);
         this.searchBox.setMaxLength(16);
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
@@ -63,14 +62,14 @@ public class JumpToScreen extends Screen {
         this.searchBox.setPlaceholder(SEARCH_TEXT);
         this.searchBox.setChangedListener(this::onSearchChange);
 
-        SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom, innerWidth, 0);
+        SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom + 3, innerWidth, 0);
         positioner.getMainPositioner()
                 .alignBottom()
                 .alignRight();
         DirectionalLayoutWidget layout = positioner.add(DirectionalLayoutWidget.horizontal());
         layout.getMainPositioner()
                 .alignBottom()
-                .margin(2);
+                .marginX(2);
 
         layout.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(48).build());
         this.buttonPerspective = switch (tab) {
@@ -106,12 +105,22 @@ public class JumpToScreen extends Screen {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
         BackgroundTexture.render(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
-        context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, GUI_TOP + 11, 12, 12);
+        ListBackgroundTexture.render(context, left + 7, LIST_TOP - 1, this.list.getRowWidth() + 2, this.getListHeight() + 2);
+        context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, LIST_TOP + 3, 12, 12);
     }
 
     // GUI height
     private int getGuiHeight() {
         return Math.max(52, this.height - (GUI_TOP * 2));
+    }
+
+    // List height including search bar
+    private int getListHeight() {
+        return this.getGuiHeight() - 29 - 8;
+    }
+
+    private int getListBottom() {
+        return LIST_TOP + this.getListHeight();
     }
 
     @Override
