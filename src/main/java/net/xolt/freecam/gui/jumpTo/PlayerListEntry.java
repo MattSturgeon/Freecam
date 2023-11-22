@@ -6,7 +6,6 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import net.xolt.freecam.util.FreecamPosition;
@@ -35,8 +34,7 @@ public class PlayerListEntry extends ListEntry {
 
         MutableText name = Text.literal(player.getEntityName());
         if (Objects.equals(player, client.player)) {
-            name.setStyle(Style.EMPTY.withItalic(false).withBold(true));
-            name = Text.translatable("gui.freecam.jumpTo.entry.player.you", name).setStyle(Style.EMPTY.withItalic(true));
+            name = Text.translatable("gui.freecam.jumpTo.entry.player.you", name);
         }
         this.name = name;
 

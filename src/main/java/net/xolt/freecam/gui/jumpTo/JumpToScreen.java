@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.input.KeyCodes;
-import net.minecraft.text.MutableText;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -25,10 +25,8 @@ public class JumpToScreen extends Screen {
     private static final int LIST_ITEM_HEIGHT = 36;
     private static final int GUI_BUTTON_ROW = 24;
 
-    //FIXME do we need our own translation keys, or is this ok?
-    private static final Text SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-    static final Text EMPTY_SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
+    private static final Text SEARCH_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
@@ -57,16 +55,7 @@ public class JumpToScreen extends Screen {
         int innerX = (this.width - innerWidth) / 2;
 
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, GUI_TOP + 9,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT){
-
-            @Override
-            protected MutableText getNarrationMessage() {
-                if (!JumpToScreen.this.searchBox.getText().isEmpty() && JumpToScreen.this.list.children().isEmpty()) {
-                    return super.getNarrationMessage().append(", ").append(EMPTY_SEARCH_TEXT);
-                }
-                return super.getNarrationMessage();
-            }
-        };
+        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, GUI_TOP + 9,  this.list.getRowWidth() - 20, 15, SEARCH_TEXT);
         this.searchBox.setMaxLength(16);
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
@@ -83,7 +72,7 @@ public class JumpToScreen extends Screen {
                 .alignBottom()
                 .margin(2);
 
-        layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.back"), button -> this.close()).width(48).build());
+        layout.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(48).build());
         this.buttonPerspective = switch (tab) {
             case COORDS -> null;
             case PLAYER -> layout.add(CyclingButtonWidget
