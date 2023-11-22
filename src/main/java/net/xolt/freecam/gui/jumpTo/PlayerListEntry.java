@@ -61,4 +61,8 @@ public class PlayerListEntry extends ListEntry {
     public String getName() {
         return this.name;
     }
+
+    public UUID getUUID() {
+        return this.uuid;
+    }
 }

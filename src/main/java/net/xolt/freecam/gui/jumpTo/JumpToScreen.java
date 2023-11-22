@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.input.KeyCodes;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -15,6 +16,7 @@ import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.util.FreeCamera;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -31,7 +33,6 @@ public class JumpToScreen extends Screen {
     static final Text EMPTY_SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
 
-    private PlayerEntryCache playerEntryCache;
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
     private boolean initialized;
@@ -52,7 +53,6 @@ public class JumpToScreen extends Screen {
         if (this.initialized) {
             this.list.updateSize(this.width, this.height, LIST_TOP, listBottom);
         } else {
-            this.playerEntryCache = new PlayerEntryCache(this.client, this);
             this.list = new ListWidget(this, this.client, this.width, this.height, LIST_TOP, listBottom, LIST_ITEM_HEIGHT);
         }
 
@@ -167,24 +167,45 @@ public class JumpToScreen extends Screen {
     }
 
     public void updateEntries() {
+        int oldCount = this.list.children().size();
+
         List<ListEntry> entries = switch (tab) {
             case PLAYER -> client.world.getPlayers()
                     .stream()
                     .filter(player -> !(player instanceof FreeCamera))
                     .filter(player -> this.matchesSearch(player.getEntityName()))
                     // TODO sort
-                    .map(this.playerEntryCache::createOrUpdate)
+                    .map(this::updateOrCreateEntry)
                     .map(ListEntry.class::cast)
                     .toList();
-            case COORDS -> null; // TODO
+            case COORDS -> Collections.emptyList(); // TODO
         };
 
-        // FIXME is there a cheaper option than List.equals()?
-        if (!this.list.children().equals(entries)) {
-            this.list.updateEntries(entries);
+        this.list.updateEntries(entries);
+        if (entries.size() != oldCount) {
             this.updateButtonState();
         }
 
+    }
+
+    // Looks for an existing entry in the current list
+    // Doing this for each player is technically O(n²), however it is still more efficient
+    // to repeatedly search an array than to allocate a new hash map and repeatedly hash UUIDs.
+    // At least for small values of n.
+    private PlayerListEntry updateOrCreateEntry(PlayerEntity player) {
+        // Search list.children() for a player entry with a matching UUID
+        // Update and return it if found, otherwise create a new one
+        return this.list.children().stream()
+                // Filter entry type
+                .filter(PlayerListEntry.class::isInstance)
+                .map(PlayerListEntry.class::cast)
+                // Filter UUID match
+                .filter(entry -> entry.getUUID().equals(player.getUuid()))
+                // Update & return any match
+                .peek(entry -> entry.update(player))
+                .findAny()
+                // If no match, create an entry
+                .orElseGet(() -> new PlayerListEntry(this.client, this, player));
     }
 
     private boolean matchesSearch(String string) {
