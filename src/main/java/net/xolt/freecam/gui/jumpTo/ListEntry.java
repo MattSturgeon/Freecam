@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.xolt.freecam.util.FreecamPosition;
 
-public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<ListEntry> {
+public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<ListEntry> implements Comparable<ListEntry> {
     protected final MinecraftClient client;
     protected final JumpToScreen screen;
     protected FreecamPosition position;
@@ -38,4 +38,6 @@ public abstract class ListEntry extends AlwaysSelectedEntryListWidget.Entry<List
     }
 
     public abstract String getName();
+
+    public abstract boolean matches(String string);
 }

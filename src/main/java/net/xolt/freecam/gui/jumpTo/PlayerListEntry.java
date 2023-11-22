@@ -5,10 +5,16 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 import net.xolt.freecam.util.FreecamPosition;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -20,13 +26,20 @@ public class PlayerListEntry extends ListEntry {
     public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
     private final @Nullable Supplier<SkinTextures> skinSupplier;
-    private final String name;
+    private final Text name;
     private final UUID uuid;
 
     public PlayerListEntry(MinecraftClient client, JumpToScreen screen, PlayerEntity player) {
         super(client, screen, FreecamPosition.getSwimmingPosition(player));
         this.uuid = player.getUuid();
-        this.name = player.getEntityName();
+
+        MutableText name = Text.literal(player.getEntityName());
+        if (Objects.equals(player, client.player)) {
+            name.setStyle(Style.EMPTY.withItalic(false).withBold(true));
+            name = Text.translatable("gui.freecam.jumpTo.entry.player.you", name).setStyle(Style.EMPTY.withItalic(true));
+        }
+        this.name = name;
+
         var networkPlayerEntry = this.client.player.networkHandler.getPlayerListEntry(this.uuid);
         this.skinSupplier = networkPlayerEntry == null ? null : networkPlayerEntry::getSkinTextures;
     }
@@ -59,10 +72,37 @@ public class PlayerListEntry extends ListEntry {
 
     @Override
     public String getName() {
-        return this.name;
+        return this.name.getString();
+    }
+
+    @Override
+    public boolean matches(String string) {
+        return this.getName().toLowerCase(Locale.ROOT).contains(string);
     }
 
     public UUID getUUID() {
         return this.uuid;
+    }
+
+    @Override
+    public int compareTo(@NotNull ListEntry entry) {
+        // Sort before non-player entries
+        if (!(entry instanceof PlayerListEntry playerListEntry)) {
+            return -1;
+        }
+
+        // Sort mc.player before other players
+        if (Objects.equals(this.getUUID(), playerListEntry.getUUID())) {
+            return 0;
+        }
+        if (Objects.equals(this.getUUID(), this.client.player.getUuid())) {
+            return -1;
+        }
+        if (Objects.equals(playerListEntry.getUUID(), this.client.player.getUuid())) {
+            return 1;
+        }
+
+        // Fallback to string compare
+        return this.getName().compareTo(playerListEntry.getName());
     }
 }

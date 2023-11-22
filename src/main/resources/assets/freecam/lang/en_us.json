@@ -16,6 +16,7 @@
   "gui.freecam.jumpTo.button.jump.@Tooltip": "Jump to selected target.",
   "gui.freecam.jumpTo.button.back": "Back",
   "gui.freecam.jumpTo.button.perspective.@Tooltip": "Initial perspective on target player.",
+  "gui.freecam.jumpTo.entry.player.you": "%s (you)",
   "text.autoconfig.freecam.option.movement": "Movement Options",
   "text.autoconfig.freecam.option.movement.@Tooltip": "How the camera moves.",
   "text.autoconfig.freecam.option.movement.flightMode": "Flight Mode",

@@ -6,7 +6,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.input.KeyCodes;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -16,10 +15,8 @@ import net.xolt.freecam.config.ModConfig;
 import net.xolt.freecam.util.FreeCamera;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JumpToScreen extends Screen {
     private static final int GUI_WIDTH = 236;
@@ -167,50 +164,52 @@ public class JumpToScreen extends Screen {
     }
 
     public void updateEntries() {
-        int oldCount = this.list.children().size();
+        List<ListEntry> entries = (switch (tab) {
+            case PLAYER -> updatePlayerEntries();
+            case COORDS -> updateCoordEntries();
+        }).stream()
+                .filter(entry -> this.currentSearch == null
+                        || this.currentSearch.isEmpty()
+                        || entry.matches(this.currentSearch))
+                .sorted()
+                .toList();
 
-        List<ListEntry> entries = switch (tab) {
-            case PLAYER -> client.world.getPlayers()
-                    .stream()
-                    .filter(player -> !(player instanceof FreeCamera))
-                    .filter(player -> this.matchesSearch(player.getEntityName()))
-                    // TODO sort
-                    .map(this::updateOrCreateEntry)
-                    .map(ListEntry.class::cast)
-                    .toList();
-            case COORDS -> Collections.emptyList(); // TODO
-        };
-
-        this.list.updateEntries(entries);
-        if (entries.size() != oldCount) {
+        // Update only if the list has changed
+        if (!Objects.equals(this.list.children(), entries)) {
+            this.list.updateEntries(entries);
             this.updateButtonState();
         }
-
     }
 
-    // Looks for an existing entry in the current list
-    // Doing this for each player is technically O(n²), however it is still more efficient
-    // to repeatedly search an array than to allocate a new hash map and repeatedly hash UUIDs.
-    // At least for small values of n.
-    private PlayerListEntry updateOrCreateEntry(PlayerEntity player) {
-        // Search list.children() for a player entry with a matching UUID
-        // Update and return it if found, otherwise create a new one
-        return this.list.children().stream()
-                // Filter entry type
+    private List<ListEntry> updateCoordEntries() {
+        // TODO
+        return Collections.emptyList();
+    }
+
+    private List<ListEntry> updatePlayerEntries() {
+        // Store the existing entries in a UUID map for easy lookup
+        Map<UUID, PlayerListEntry> currentEntries = this.list.children()
+                .parallelStream()
                 .filter(PlayerListEntry.class::isInstance)
                 .map(PlayerListEntry.class::cast)
-                // Filter UUID match
-                .filter(entry -> entry.getUUID().equals(player.getUuid()))
-                // Update & return any match
-                .peek(entry -> entry.update(player))
-                .findAny()
-                // If no match, create an entry
-                .orElseGet(() -> new PlayerListEntry(this.client, this, player));
-    }
+                .collect(Collectors.toUnmodifiableMap(PlayerListEntry::getUUID, entry -> entry));
 
-    private boolean matchesSearch(String string) {
-        return this.currentSearch == null || this.currentSearch.isEmpty()
-                || string.toLowerCase(Locale.ROOT).contains(this.currentSearch);
+        // Map the in-range players into PlayerListEntries
+        // Use existing entries if possible
+        return this.client.world.getPlayers()
+                .parallelStream()
+                .filter(player -> !(player instanceof FreeCamera))
+                .map(player -> {
+                    PlayerListEntry entry = currentEntries.get(player.getUuid());
+                    if (entry == null) {
+                        return new PlayerListEntry(this.client, this, player);
+                    } else {
+                        entry.update(player);
+                        return entry;
+                    }
+                })
+                .map(ListEntry.class::cast)
+                .toList();
     }
 
     private void onSearchChange(String search) {
