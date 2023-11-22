@@ -29,6 +29,7 @@ public class JumpToScreen extends Screen {
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
     private boolean initialized;
+    private ButtonWidget buttonBack;
     private ButtonWidget buttonJump;
     private CyclingButtonWidget<ModConfig.Perspective> buttonPerspective;
     private TextFieldWidget searchBox;
@@ -41,26 +42,43 @@ public class JumpToScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        int listTop = LIST_TOP + 16;
-        int listBottom = this.getListBottom();
 
-        if (this.initialized) {
-            this.list.updateSize(this.width, this.height, listTop, listBottom);
-        } else {
-            this.list = new ListWidget(this, this.client, this.width, this.height, listTop, listBottom, LIST_ITEM_HEIGHT);
+        if (!this.initialized) {
+            this.list = new ListWidget(this, this.client, this.width, this.height, 0, 0, LIST_ITEM_HEIGHT);
+            this.searchBox = new TextFieldWidget(this.textRenderer, 0, 15, SEARCH_TEXT);
+            this.searchBox.setPlaceholder(SEARCH_TEXT);
+            this.searchBox.setMaxLength(16);
+            this.searchBox.setVisible(true);
+            this.searchBox.setEditableColor(0xFFFFFF);
+            this.searchBox.setChangedListener(this::onSearchChange);
+
+            this.buttonJump = ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump())
+                    .tooltip(Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.jump.@Tooltip")))
+                    .width(48)
+                    .build();
+
+            this.buttonPerspective = CyclingButtonWidget
+                    .builder(ModConfig.Perspective::getName)
+                    .values(ModConfig.Perspective.values())
+                    .initially(ModConfig.INSTANCE.hidden.jumpToPerspective)
+                    .tooltip(value -> Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.perspective.@Tooltip", value)))
+                    .omitKeyText()
+                    .build(0, 0, 80, 20, null, (button, value) -> {
+                        ModConfig.INSTANCE.hidden.jumpToPerspective = value;
+                        AutoConfig.getConfigHolder(ModConfig.class).save();
+                    });
+
+            this.buttonBack = ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(48).build();
         }
 
+        int listTop = LIST_TOP + 16;
+        int listBottom = this.getListBottom();
         int innerWidth = GUI_WIDTH - 10;
         int innerX = (this.width - innerWidth) / 2;
 
-        String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, innerX + 20, LIST_TOP + 1,  this.list.getRowWidth() - 19, 15, SEARCH_TEXT);
-        this.searchBox.setMaxLength(16);
-        this.searchBox.setVisible(true);
-        this.searchBox.setEditableColor(0xFFFFFF);
-        this.searchBox.setText(string);
-        this.searchBox.setPlaceholder(SEARCH_TEXT);
-        this.searchBox.setChangedListener(this::onSearchChange);
+        this.list.updateSize(this.width, this.height, listTop, listBottom);
+        this.searchBox.setPosition(innerX + 20, LIST_TOP + 1);
+        this.searchBox.setWidth(this.list.getRowWidth() - 19);
 
         SimplePositioningWidget positioner = new SimplePositioningWidget(innerX, listBottom + 3, innerWidth, 0);
         positioner.getMainPositioner()
@@ -71,25 +89,11 @@ public class JumpToScreen extends Screen {
                 .alignBottom()
                 .marginX(2);
 
-        layout.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).width(48).build());
-        this.buttonPerspective = switch (tab) {
-            case COORDS -> null;
-            case PLAYER -> layout.add(CyclingButtonWidget
-                    .builder(ModConfig.Perspective::getName)
-                    .values(ModConfig.Perspective.values())
-                    .initially(ModConfig.INSTANCE.hidden.jumpToPerspective)
-                    .tooltip(value -> Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.perspective.@Tooltip", value)))
-                    .omitKeyText()
-                    .build(0, 0, 80, 20, null, (button, value) -> {
-                        ModConfig.INSTANCE.hidden.jumpToPerspective = value;
-                        AutoConfig.getConfigHolder(ModConfig.class).save();
-                    }));
-        };
-        this.buttonJump = layout.add(ButtonWidget.builder(Text.translatable("gui.freecam.jumpTo.button.jump"), button -> this.jump())
-                        .tooltip(Tooltip.of(Text.translatable("gui.freecam.jumpTo.button.jump.@Tooltip")))
-                        .width(48)
-                        .build());
-
+        layout.add(this.buttonBack);
+        if (tab == Tab.PLAYER) {
+            layout.add(this.buttonPerspective);
+        }
+        layout.add(this.buttonJump);
 
         positioner.refreshPositions();
         positioner.forEachChild(this::addDrawableChild);
