@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
-import net.xolt.freecam.gui.NineSliceTexture;
+import net.xolt.freecam.gui.textures.Texture;
 import net.xolt.freecam.util.FreeCamera;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,8 +26,8 @@ public class JumpToScreen extends Screen {
     private static final int LIST_ITEM_HEIGHT = 36;
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
     private static final Text SEARCH_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-    private static final NineSliceTexture JUMP_BACKGROUND = new NineSliceTexture(new Identifier(Freecam.ID, "textures/gui/jump_background.png"), 9, 9, 4);
-    private static final NineSliceTexture JUMP_LIST_BACKGROUND = new NineSliceTexture(new Identifier(Freecam.ID, "textures/gui/jump_list_background.png"), 3, 3, 1);
+    private static final Texture JUMP_BACKGROUND = Texture.getTexture(new Identifier(Freecam.ID, "textures/gui/jump_background.png"));
+    private static final Texture JUMP_LIST_BACKGROUND = Texture.getTexture(new Identifier(Freecam.ID, "textures/gui/jump_list_background.png"));
 
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
