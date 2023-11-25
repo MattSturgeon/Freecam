@@ -15,6 +15,10 @@ repositories {
     maven { url "https://maven.terraformersmc.com/" }
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/freecam.accessWidener")
+}
+
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.mc_version}"

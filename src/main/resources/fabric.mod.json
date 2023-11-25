@@ -19,6 +19,7 @@
       "net.xolt.freecam.config.ModMenuIntegration"
     ]
   },
+  "accessWidener": "freecam.accessWidener",
   "mixins": [
     "freecam.mixins.json"
   ],

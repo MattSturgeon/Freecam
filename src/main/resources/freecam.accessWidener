@@ -1,0 +1,6 @@
+accessWidener   v1  named
+
+accessible method net/minecraft/client/texture/Sprite <init> (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/SpriteContents;IIII)V
+accessible method net/minecraft/client/gui/DrawContext drawSprite (Lnet/minecraft/client/texture/Sprite;IIIII)V
+accessible method net/minecraft/client/gui/DrawContext drawSpriteTiled (Lnet/minecraft/client/texture/Sprite;IIIIIIIIIII)V
+accessible method net/minecraft/client/gui/DrawContext drawSprite (Lnet/minecraft/client/texture/Sprite;Lnet/minecraft/client/texture/Scaling$NineSlice;IIIII)V

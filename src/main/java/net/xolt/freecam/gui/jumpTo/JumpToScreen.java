@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
-import net.xolt.freecam.gui.textures.Texture;
+import net.xolt.freecam.gui.Texture;
 import net.xolt.freecam.util.FreeCamera;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,8 +26,8 @@ public class JumpToScreen extends Screen {
     private static final int LIST_ITEM_HEIGHT = 36;
     private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
     private static final Text SEARCH_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-    private static final Texture JUMP_BACKGROUND = Texture.getTexture(new Identifier(Freecam.ID, "textures/gui/jump_background.png"));
-    private static final Texture JUMP_LIST_BACKGROUND = Texture.getTexture(new Identifier(Freecam.ID, "textures/gui/jump_list_background.png"));
+    private static final Texture JUMP_BACKGROUND = new Texture(new Identifier(Freecam.ID, "textures/gui/jump_background.png"));
+    private static final Texture JUMP_LIST_BACKGROUND = new Texture(new Identifier(Freecam.ID, "textures/gui/jump_list_background.png"));
 
     private Tab tab = Tab.PLAYER;
     private ListWidget list;
@@ -111,8 +111,8 @@ public class JumpToScreen extends Screen {
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         super.renderBackground(context, mouseX, mouseY, delta);
         int left = (this.width - GUI_WIDTH) / 2;
-        JUMP_BACKGROUND.draw(context, left, GUI_TOP, GUI_WIDTH, this.getGuiHeight());
-        JUMP_LIST_BACKGROUND.draw(context, left + 7, LIST_TOP - 1, this.list.getRowWidth() + 2, this.getListHeight() + 2);
+        JUMP_BACKGROUND.draw(context, left, GUI_TOP, 0, GUI_WIDTH, this.getGuiHeight());
+        JUMP_LIST_BACKGROUND.draw(context, left + 7, LIST_TOP - 1, 0, this.list.getRowWidth() + 2, this.getListHeight() + 2);
         context.drawGuiTexture(SEARCH_ICON_TEXTURE, left + 10, LIST_TOP + 3, 12, 12);
     }
 
