@@ -1,6 +1,6 @@
-package com.example.mixin;
+package net.xolt.freecam.mixin;
 
-import com.example.ExampleMod;
+import net.xolt.freecam.Freecam;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +12,6 @@ public class ExampleMixin {
 
     @Inject(method = "init()V", at = @At("HEAD"))
     private void init(CallbackInfo info) {
-        ExampleMod.LOGGER.info("This line is printed by an example mod mixin!");
+        Freecam.LOGGER.info("This line is printed by an example mod mixin!");
     }
 }

@@ -1,10 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.example.mixin",
+  "package": "net.xolt.freecam.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
   "client": [
     "ExampleMixin"
   ],

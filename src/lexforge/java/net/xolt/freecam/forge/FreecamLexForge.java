@@ -1,19 +1,19 @@
-package com.example.forge;
+package net.xolt.freecam.forge;
 
-import com.example.ExampleMod;
+import net.xolt.freecam.Freecam;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod("modid")
-public class ExampleModForge {
+public class FreecamLexForge {
 
-    public ExampleModForge() {
+    public FreecamLexForge() {
     }
 
     @SubscribeEvent
     public void onInit(FMLCommonSetupEvent event) {
-        ExampleMod.LOGGER.info("Hello from Forge!");
+        Freecam.LOGGER.info("Hello from Forge!");
     }
 
 }
