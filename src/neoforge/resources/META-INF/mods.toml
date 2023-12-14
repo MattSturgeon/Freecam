@@ -1,21 +1,30 @@
-modLoader="javafml"
+modLoader = "javafml"
 loaderVersion="[1,)"
-issueTrackerURL="https://github.com/wagyourtail/jsmacros"
-license = "MPL-2.0"
+license = "MIT"
+issueTrackerURL = "https://github.com/hashalite/Freecam/issues"
 
 [[mods]]
 modId = "freecam"
 version = "${version}"
-displayName = "Example Mod"
-authors = "Me!"
+displayName = "Freecam"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/free-cam"
+logoFile = "icon.png"
+logoBlur = false
+authors="hashalite"
 description = '''
-    This is an example description! Tell everyone what your mod is about!
+A highly customizable freecam mod.
 '''
-logoFile="icon.png"
+
+[[dependencies.freecam]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[20,)"
+ordering = "NONE"
+side = "CLIENT"
 
 [[dependencies.freecam]]
 modId="minecraft"
 mandatory=true
 versionRange="[1.20.2]"
 ordering="NONE"
-side="BOTH"
+side="CLIENT"

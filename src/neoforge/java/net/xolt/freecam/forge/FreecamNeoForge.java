@@ -5,7 +5,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
-@Mod("modid")
+@Mod("freecam")
 public class FreecamNeoForge {
 
     public FreecamNeoForge() {
