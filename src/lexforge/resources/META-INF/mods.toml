@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "Freecam"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/free-cam"
 logoFile = "icon.png"
-logoBlur = false
+logoBlur = true
 authors="hashalite"
 description = '''
 A highly customizable freecam mod.
