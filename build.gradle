@@ -49,6 +49,7 @@ unimined.minecraft {
     }
 
     defaultRemapJar = false
+    runs.off = true
 }
 
 unimined.minecraft(sourceSets.fabric) {
@@ -59,6 +60,7 @@ unimined.minecraft(sourceSets.fabric) {
     }
 
     defaultRemapJar = true
+    runs.off = false
 }
 
 unimined.minecraft(sourceSets.neoforge) {
@@ -78,6 +80,7 @@ unimined.minecraft(sourceSets.neoforge) {
     }
 
     defaultRemapJar = true
+    runs.off = false
 }
 
 unimined.minecraft(sourceSets.lexforge) {
@@ -93,6 +96,7 @@ unimined.minecraft(sourceSets.lexforge) {
     }
 
     defaultRemapJar = true
+    runs.off = false
 }
 
 dependencies {
