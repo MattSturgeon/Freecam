@@ -153,10 +153,6 @@ processNeoforgeResources {
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
-
-    filesMatching("assets/freecam/icon.png") {
-        it.path = "icon.png"
-    }
 }
 
 processLexforgeResources {
@@ -164,9 +160,5 @@ processLexforgeResources {
 
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
-    }
-
-    filesMatching("assets/freecam/icon.png") {
-        it.path = "icon.png"
     }
 }
