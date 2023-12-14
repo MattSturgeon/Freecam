@@ -2,21 +2,20 @@
   "schemaVersion": 1,
   "id": "freecam",
   "version": "${version}",
-
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Freecam",
+  "description": "A highly customizable freecam mod.",
   "authors": [
-    "Me!"
+    "hashalite"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/free-cam",
+    "sources": "https://github.com/hashalite/Freecam",
+    "issues": "https://github.com/hashalite/Freecam/issues"
   },
-
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/freecam/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       "net.xolt.freecam.fabric.FreecamFabric"
