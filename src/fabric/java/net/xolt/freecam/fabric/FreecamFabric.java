@@ -8,6 +8,6 @@ public class FreecamFabric implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        Freecam.LOGGER.info("Hello from Fabric!");
+        Freecam.init();
     }
 }

@@ -13,7 +13,7 @@ public class FreecamNeoForge {
 
     @SubscribeEvent
     public void onInit(FMLCommonSetupEvent event) {
-        Freecam.LOGGER.info("Hello from Forge!");
+        Freecam.init();
     }
 
 }
