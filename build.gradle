@@ -75,6 +75,7 @@ unimined.minecraft(sourceSets.neoforge) {
 }
 
 unimined.minecraft(sourceSets.lexforge) {
+    combineWith(sourceSets.main)
     version project.minecraft_version
 
     mappings {
