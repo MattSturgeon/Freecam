@@ -34,6 +34,11 @@ sourceSets {
     lexforge
 }
 
+configurations {
+    modCompileOnly
+    compileOnly.extendsFrom modCompileOnly
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -61,7 +66,7 @@ unimined.minecraft {
         devFallbackNamespace "intermediary"
     }
 
-    mods.modImplementation {
+    mods.remap(configurations.modCompileOnly) {
         namespace "intermediary"
         fallbackNamespace "official"
         catchAWNamespaceAssertion()
@@ -118,21 +123,19 @@ unimined.minecraft(sourceSets.lexforge) {
     runs.off = false
 }
 
-configurations.implementation.extendsFrom configurations.modImplementation
-
 dependencies {
     // we need this in main where it isn't by default FIXME can be compileOnly?
     compileOnly "org.spongepowered:mixin:0.8.5-SNAPSHOT"
 
     // Architectury API, used on all platforms
-    modImplementation "dev.architectury:architectury:${project.architectury_api_version}"
+    modCompileOnly "dev.architectury:architectury:${project.architectury_api_version}"
     fabricModImplementation("dev.architectury:architectury-fabric:${project.architectury_api_version}")
     fabricInclude "dev.architectury:architectury-fabric:${project.architectury_api_version}"
     lexforgeModImplementation "dev.architectury:architectury-forge:${project.architectury_api_version}"
     neoforgeModImplementation "dev.architectury:architectury-neoforge:${project.architectury_api_version}"
 
     // Cloth-Config, used on all platforms
-    modImplementation "me.shedaniel.cloth:cloth-config:${project.cloth_version}"
+    modCompileOnly "me.shedaniel.cloth:cloth-config:${project.cloth_version}"
     fabricModImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
         exclude module: "fabric-api"
         exclude module: "fabric-loader"
