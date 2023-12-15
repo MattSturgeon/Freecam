@@ -86,6 +86,13 @@ unimined.minecraft(sourceSets.fabric) {
     fabric {
         loader project.fabric_loader_version
     }
+
+    // FIXME work around upstream issue: this should be set for us but isn't
+    mods.modImplementation {
+        mixinRemap {
+            off()
+        }
+    }
 }
 
 unimined.minecraft(sourceSets.neoforge) {
