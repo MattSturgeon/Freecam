@@ -138,7 +138,9 @@ dependencies {
 
     // Architectury API, used on all platforms
     modImplementation "dev.architectury:architectury:${project.architectury_api_version}"
-    fabricModImplementation("dev.architectury:architectury-fabric:${project.architectury_api_version}")
+    fabricModImplementation("dev.architectury:architectury-fabric:${project.architectury_api_version}") {
+        exclude module: "fabric-api"
+    }
     fabricInclude "dev.architectury:architectury-fabric:${project.architectury_api_version}"
     lexforgeModImplementation "dev.architectury:architectury-forge:${project.architectury_api_version}"
     neoforgeModImplementation "dev.architectury:architectury-neoforge:${project.architectury_api_version}"
