@@ -1,66 +1,172 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
+    id 'java'
+    id 'idea'
+    id 'xyz.wagyourtail.unimined' version '1.1.1-SNAPSHOT'
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+base.archivesName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+sourceSets {
+    fabric
+    neoforge
+    lexforge
 }
 
-subprojects {
-    apply plugin: "dev.architectury.loom"
+configurations {
+    modCompileOnly
+    compileOnly.extendsFrom modCompileOnly
+}
 
-    loom {
-        // TODO consider using to official mappings?
-        // silentMojangMappingsLicense()
+repositories {
+    mavenCentral()
+    maven {
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
     }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
-        // TODO consider using to official mappings?
-        // mappings loom.officialMojangMappings()
+    maven {
+        name = "terraformers"
+        url = "https://maven.terraformersmc.com"
+    }
+    maven {
+        name = "architectury"
+        url = "https://maven.architectury.dev"
     }
 }
 
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
+unimined.minecraft {
+    def isMain = sourceSet == sourceSets.main
 
-    base {
-        archivesName = rootProject.archives_base_name
+    version project.minecraft_version
+
+    mappings {
+        intermediary()
+        yarn(project.yarn_build, project.yarn_version)
+
+        devFallbackNamespace "intermediary"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-
-    version = rootProject.mod_version
-    group = rootProject.maven_group
-
-    repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
-        maven { url "https://maven.shedaniel.me/" }
-        maven { url "https://maven.terraformersmc.com/" }
+    if (isMain) {
+        mods.remap(configurations.modCompileOnly) {
+            namespace "intermediary"
+            fallbackNamespace "official"
+            catchAWNamespaceAssertion()
+        }
     }
 
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 17
+    runs.off = isMain
+    runs.config("client") {
+        description = "run client"
     }
 
-    java {
-        withSourcesJar()
+    side "client"
+    defaultRemapJar = !isMain
+}
+
+unimined.minecraft(sourceSets.fabric) {
+    combineWith(sourceSets.main)
+
+    fabric {
+        loader project.fabric_loader_version
     }
 
-    jar {
-        from "LICENSE"
+    // FIXME work around upstream issue: this should be set for us but isn't
+    mods.modImplementation {
+        mixinRemap {
+            off()
+        }
+    }
+}
+
+unimined.minecraft(sourceSets.neoforge) {
+    combineWith(sourceSets.main)
+
+    neoForged {
+        loader project.neoforge_version
+        mixinConfig "freecam.mixins.json"
+    }
+
+    minecraftRemapper.config {
+        // neoforge adds 1 conflict, where 2 interfaces have a method with the same name on yarn/mojmap,
+        // but the method has different names in the intermediary mappings.
+        // this is a conflict because they have a class that extends both interfaces.
+        // this shouldn't be a problem as long as named mappings don't make the name of those 2 methods different.
+        ignoreConflicts(true)
+    }
+}
+
+unimined.minecraft(sourceSets.lexforge) {
+    combineWith(sourceSets.main)
+
+    minecraftForge {
+        loader project.lexforge_version
+        mixinConfig "freecam.mixins.json"
+    }
+
+    minecraftRemapper.config {
+        ignoreConflicts(true)
+    }
+}
+
+dependencies {
+    // we need this in main where it isn't by default FIXME can be compileOnly?
+    compileOnly "org.spongepowered:mixin:0.8.5-SNAPSHOT"
+
+    // Architectury API, used on all platforms
+    modCompileOnly "dev.architectury:architectury:${project.architectury_api_version}"
+    fabricModImplementation("dev.architectury:architectury-fabric:${project.architectury_api_version}") {
+        exclude module: "fabric-api"
+    }
+    fabricInclude "dev.architectury:architectury-fabric:${project.architectury_api_version}"
+    lexforgeModImplementation "dev.architectury:architectury-forge:${project.architectury_api_version}"
+    neoforgeModImplementation "dev.architectury:architectury-neoforge:${project.architectury_api_version}"
+
+    // Cloth-Config, used on all platforms
+    modCompileOnly "me.shedaniel.cloth:cloth-config:${project.cloth_version}"
+    fabricModImplementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}") {
+        exclude module: "fabric-api"
+        exclude module: "fabric-loader"
+        exclude module: "toml4j" // IllegalAccessException: Can not set final field com.mojang.authlib.yggdrasil.response.ErrorResponse.path
+    }
+    fabricInclude "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_version}"
+    lexforgeModImplementation "me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}"
+    neoforgeModImplementation "me.shedaniel.cloth:cloth-config-neoforge:${project.cloth_version}"
+
+    // Only used in fabric
+    fabricModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    fabricModImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
+        exclude module: "fabric-api"
+    }
+}
+
+jar {
+    enabled = false
+}
+
+processFabricResources {
+    inputs.property "version", project.version
+
+    filesMatching("freecam.mod.json") {
+        expand "version": project.version
+    }
+}
+
+processNeoforgeResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+processLexforgeResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
     }
 }

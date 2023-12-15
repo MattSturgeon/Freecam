@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion="[1,)"
+issueTrackerURL = "https://github.com/hashalite/Freecam/issues"
+license = "MIT"
+
+[[mods]]
+modId = "freecam"
+version = "${version}"
+displayName = "Freecam"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/free-cam"
+logoFile = "icon.png"
+logoBlur = true
+authors="hashalite"
+description = '''
+A highly customizable freecam mod.
+'''
+
+[[dependencies.freecam]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[20,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.freecam]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.2]"
+ordering = "NONE"
+side = "CLIENT"
