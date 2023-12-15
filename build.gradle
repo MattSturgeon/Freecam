@@ -75,8 +75,12 @@ unimined.minecraft {
         }
     }
 
-    side = CLIENT
     runs.off = isMain
+    runs.config("client") {
+        description = "run client"
+    }
+
+    side = CLIENT
     defaultRemapJar = !isMain
 }
 
