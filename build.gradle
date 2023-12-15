@@ -56,8 +56,9 @@ repositories {
 }
 
 unimined.minecraft {
+    def isMain = sourceSet == sourceSets.main
+
     version project.minecraft_version
-    side = CLIENT
 
     mappings {
         intermediary()
@@ -66,7 +67,7 @@ unimined.minecraft {
         devFallbackNamespace "intermediary"
     }
 
-    if (sourceSet == sourceSets.main) {
+    if (isMain) {
         mods.remap(configurations.modCompileOnly) {
             namespace "intermediary"
             fallbackNamespace "official"
@@ -74,8 +75,9 @@ unimined.minecraft {
         }
     }
 
-    defaultRemapJar = false
-    runs.off = true
+    side = CLIENT
+    runs.off = !isMain
+    defaultRemapJar = !isMain
 }
 
 unimined.minecraft(sourceSets.fabric) {
@@ -84,9 +86,6 @@ unimined.minecraft(sourceSets.fabric) {
     fabric {
         loader project.fabric_loader_version
     }
-
-    defaultRemapJar = true
-    runs.off = false
 }
 
 unimined.minecraft(sourceSets.neoforge) {
@@ -104,9 +103,6 @@ unimined.minecraft(sourceSets.neoforge) {
         // this shouldn't be a problem as long as named mappings don't make the name of those 2 methods different.
         ignoreConflicts(true)
     }
-
-    defaultRemapJar = true
-    runs.off = false
 }
 
 unimined.minecraft(sourceSets.lexforge) {
@@ -120,9 +116,6 @@ unimined.minecraft(sourceSets.lexforge) {
     minecraftRemapper.config {
         ignoreConflicts(true)
     }
-
-    defaultRemapJar = true
-    runs.off = false
 }
 
 dependencies {
