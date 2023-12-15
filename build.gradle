@@ -64,6 +64,7 @@ unimined.minecraft {
     mods.modImplementation {
         namespace "intermediary"
         fallbackNamespace "official"
+        catchAWNamespaceAssertion()
     }
 
     defaultRemapJar = false
