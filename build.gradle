@@ -158,7 +158,9 @@ dependencies {
 
     // Only used in fabric
     fabricModImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    fabricModImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude module: "fabric-api" }
+    fabricModImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
+        exclude module: "fabric-api"
+    }
 }
 
 jar {
