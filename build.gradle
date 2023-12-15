@@ -61,6 +61,11 @@ unimined.minecraft {
         devFallbackNamespace "intermediary"
     }
 
+    mods.modImplementation {
+        namespace "intermediary"
+        fallbackNamespace "official"
+    }
+
     defaultRemapJar = false
     runs.off = true
 }
@@ -111,6 +116,8 @@ unimined.minecraft(sourceSets.lexforge) {
     defaultRemapJar = true
     runs.off = false
 }
+
+configurations.implementation.extendsFrom configurations.modImplementation
 
 dependencies {
     // we need this in main where it isn't by default FIXME can be compileOnly?
