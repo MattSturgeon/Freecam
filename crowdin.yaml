@@ -1,3 +1,13 @@
+pull_request_title: Crowdin translations
+pull_request_labels: [ 'i18n' ]
+commit_message: |
+  i18n: translations for %language% (%locale%)
+  
+  Based on `%original_path%/%original_file_name%`.
+  
+  [skip ci]
+append_commit_message: false
+
 files:
   - source: '/**/lang/en_us.json'
     translation: '/**/lang/%locale%.json'
