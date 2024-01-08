@@ -1,0 +1,3 @@
+files:
+  - source: /common/src/main/resources/assets/freecam/lang/en_us.json
+    translation: /common/src/main/resources/assets/freecam/lang/%language%.json
