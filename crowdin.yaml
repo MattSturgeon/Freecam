@@ -1,3 +1,18 @@
+pull_request_title: Crowdin translations
+pull_request_labels: [ 'i18n' ]
+commit_message: |
+  i18n: %language% translations from Crowdin
+  
+  [skip ci]
+append_commit_message: false
+
 files:
-  - source: /*/src/*/resources/assets/*/lang/en_us.json
-    translation: '%original_path%/%locale_with_underscore%.json'
+  - source: '/**/lang/en_us.json'
+    translation: '/**/lang/%locale%.json'
+    languages_mapping:
+      locale:
+        # Valid keys: https://developer.crowdin.com/language-codes
+        # Valid values ("in-game" locale column): https://minecraft.wiki/w/Language
+        it: it_it
+        ja: ja_jp
+        zh-CN: zh_cn
