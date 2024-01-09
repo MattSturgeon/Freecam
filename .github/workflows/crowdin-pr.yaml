@@ -1,0 +1,37 @@
+name: Crowdin (Pull Request)
+
+on:
+  workflow_dispatch: # Allow running manually
+  schedule:
+    # https://crontab.guru
+    - cron: '0 */12 * * *' # Every 12 hours
+
+# When this workflow runs, it will be queued as 'pending' if an in-progress workflow has the same group
+concurrency:
+  group: crowdin
+  #cancel-in-progress: true
+
+jobs:
+  crowdin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create or Update PR
+        uses: crowdin/github-action@v1
+        with:
+          upload_sources: false
+          upload_translations: false
+          download_translations: true
+          localization_branch_name: i18n/main
+          crowdin_branch_name: ${{ env.BRANCH_NAME }}
+
+          create_pull_request: true
+          pull_request_title: Crowdin translations for ${{ env.BRANCH_NAME }}
+          pull_request_labels: enhancement, i18n
+          pull_request_base_branch_name: ${{ env.BRANCH_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
