@@ -9,11 +9,4 @@ append_commit_message: false
 
 files:
   - source: '/**/lang/en_us.json'
-    translation: '/**/lang/%locale%.json'
-    languages_mapping:
-      locale:
-        # Valid keys: https://developer.crowdin.com/language-codes
-        # Valid values ("in-game" locale column): https://minecraft.wiki/w/Language
-        it: it_it
-        ja: ja_jp
-        zh-CN: zh_cn
+    translation: '/**/lang/%locale_with_underscore%.json'
