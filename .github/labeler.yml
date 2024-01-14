@@ -1,0 +1,13 @@
+# Add 'enhancement' label to any PR where the branch name matches one of the regexps
+enhancement:
+ - head-branch:
+   - feat
+   - add
+   - new
+
+# Add 'bug' label to PRs where the branch name matches one of the regexps
+bug:
+ - head-branch:
+   - fix
+   - bug
+   - correct
