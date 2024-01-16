@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create or Update PR
+      - name: Crowdin PR
         uses: crowdin/github-action@v1
         with:
           upload_sources: false
