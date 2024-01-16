@@ -7,8 +7,8 @@ on:
 #    branches:
 #      - main
 #    paths:
-#      - '/**/lang/*.json'
-#      - '!/**/lang/en_us.json'
+#      - '**/lang/*.json'
+#      - '!**/lang/en_us.json'
 
 # Kill any currently running workflows in the 'crowdin' group before running this.
 # Will break if on.push gets enabled, because this will run concurrently with upload-sources
