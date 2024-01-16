@@ -1,15 +1,17 @@
-name: Crowdin (Upload)
+name: Crowdin (Upload Translations)
 
 on:
   workflow_dispatch: # Allow running manually
-  # Run when a lang file is modified
-  push:
-    branches:
-      - main
-    paths:
-      - '/**/lang/*.json'
+## (Disable automatic runs for now)
+#  push: # Run when a non-en_us lang file is modified on the main branch
+#    branches:
+#      - main
+#    paths:
+#      - '/**/lang/*.json'
+#      - '!/**/lang/en_us.json'
 
-# When this workflow runs, it will kill any in-progress workflows with the same group
+# Kill any currently running workflows in the 'crowdin' group before running this.
+# Will break if on.push gets enabled, because this will run concurrently with upload-sources
 concurrency:
   group: crowdin
   cancel-in-progress: true
@@ -24,7 +26,7 @@ jobs:
       - name: Crowdin upload
         uses: crowdin/github-action@v1
         with:
-          upload_sources: true
+          upload_sources: false
           upload_translations: true
           download_translations: false
           crowdin_branch_name: ${{ env.BRANCH_NAME }}
