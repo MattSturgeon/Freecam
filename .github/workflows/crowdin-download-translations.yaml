@@ -37,7 +37,7 @@ jobs:
           pull_request_base_branch_name: ${{ github.ref_name }}
           localization_branch_name: i18n/${{ github.ref_name }}
           commit_message: |
-            i18n: Crowdin translations for %language%
+            i18n: New Crowdin translations
             
             [skip ci]
         env:
