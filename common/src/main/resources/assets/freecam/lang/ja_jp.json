@@ -1,7 +1,6 @@
 {
-  "category.freecam.freecam": "Freecam",
-  "key.freecam.toggle": "Freecamの切り替え",
-  "key.freecam.playerControl": "プレーヤーコントロール",
+  "key.freecam.toggle": "TestingTesting",
+  "key.freecam.playerControl": "Example translation",
   "key.freecam.tripodReset": "三脚のリセット",
   "key.freecam.configGui": "コンフィグ GUI",
   "msg.freecam.enable": "Freecamが有効になりました。",
