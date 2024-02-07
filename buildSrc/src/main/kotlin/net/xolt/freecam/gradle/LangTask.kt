@@ -70,7 +70,9 @@ abstract class LangTask : DefaultTask() {
      */
     @TaskAction
     fun build() {
-        val processors = listOf<LangProcessor>()
+        val processors = listOf(
+            VariantTooltipProcessor(variant.get())
+        )
 
         val languages = inputDirectory.get().asFile
             .childDirectories()
