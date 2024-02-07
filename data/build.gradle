@@ -1,4 +1,5 @@
 import net.xolt.freecam.gradle.LangTask
+import net.xolt.freecam.gradle.VariantTooltipTransformer
 
 def platforms = (rootProject.enabled_platforms as String).split(',')
 def variants = (rootProject.build_variants as String).split(',')
@@ -18,6 +19,7 @@ variants.each { variant ->
             def code = lang.replaceAll("-", "_").toLowerCase()
             return "assets/${rootProject.name}/lang/${code}.json"
         }
+        transformer(new VariantTooltipTransformer(variant))
     }
 
     platforms.each { platform ->
