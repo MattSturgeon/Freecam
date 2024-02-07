@@ -110,6 +110,32 @@ abstract class LangTask : DefaultTask() {
         return built
     }
 
+    /**
+     * Get the given translation, for the given language.
+     *
+     * Will fall back to using the [source language][source] if the key isn't
+     * found in the specified language or if language isn't specified.
+     *
+     * Should only be used **after** this task has finished executing.
+     * I.e. **not** during Gradle's configuration step.
+     *
+     * @param key the translation key
+     * @param lang the locale, e.g. en-US, en_us, or zh-CN
+     * @return the translation, or null if not found
+     */
+    @JvmOverloads
+    fun getTranslation(key: String, lang: String = source.get()): String? {
+        val file = fileFor(lang)
+        val translation = readJsonFile(file)[key]
+
+        // Check "source" translation if key wasn't found
+        return if (translation == null && file != fileFor(source.get())) {
+            getTranslation(key)
+        } else {
+            translation
+        }
+    }
+
     // Get the output file for a given lang, using filenameProvider.
     private fun fileFor(lang: String) = outputDirectory.get().asFile.resolve(filenameProvider(lang).toString())
 
