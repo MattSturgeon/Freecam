@@ -1,0 +1,37 @@
+import org.apache.commons.io.FilenameUtils
+
+dependencies {
+    // Depend on ":common" so we can build docs from its classes,
+    // we also get Minecraft classes from the root buildscript's `subprojects` block.
+    implementation project(path: ":common", configuration: "namedElements")
+}
+
+def genTask = tasks.register("generate") {
+    group = "documentation"
+    description = "Generate project documentation"
+}
+
+project(":common")
+        .file("src/main/resources/assets/freecam/lang")
+        .listFiles()
+        .each { json ->
+            def lang = FilenameUtils.getBaseName json.name
+            def camelLang = lang.split("_").inject("") { left, right ->
+                left.empty ? right : left + right.capitalize()
+            }
+
+            // Runs the main sourceSet, outputs generated docs in build/docs
+            def task = tasks.register("generate_${lang}", JavaExec) {
+                group = "documentation"
+                description = "Generate project documentation for $lang"
+
+                classpath = sourceSets.main.runtimeClasspath
+                mainClass = "net.xolt.freecam.docgen.Main"
+
+                def outputDir = layout.buildDirectory.dir "docs/${lang}"
+                args = [ lang, outputDir.get().asFile.absolutePath ]
+                outputs.dir outputDir
+            }
+
+            genTask.configure { dependsOn task }
+        }
