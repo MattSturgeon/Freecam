@@ -27,6 +27,8 @@ project(":common")
 
                 classpath = sourceSets.main.runtimeClasspath
                 mainClass = "net.xolt.freecam.docgen.Main"
+                workingDir = layout.projectDirectory.dir("run").asFile
+                doFirst { workingDir.mkdirs() }
 
                 def outputDir = layout.buildDirectory.dir "docs/${lang}"
                 args = [ lang, outputDir.get().asFile.absolutePath ]
