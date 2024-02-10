@@ -16,9 +16,6 @@ project(":common")
         .listFiles()
         .each { json ->
             def lang = FilenameUtils.getBaseName json.name
-            def camelLang = lang.split("_").inject("") { left, right ->
-                left.empty ? right : left + right.capitalize()
-            }
 
             // Runs the main sourceSet, outputs generated docs in build/docs
             def task = tasks.register("generate_${lang}", JavaExec) {
