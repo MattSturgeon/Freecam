@@ -77,8 +77,8 @@ public class Main {
 
         DirectoryValidator permissiveValidator = new DirectoryValidator(path -> true);
         ClientPackSource clientPackSource = new ClientPackSource(realAssetsDir, permissiveValidator);
-        PackRepository repository = new PackRepository(clientPackSource);
-        // FIXME need to add freecam assets to repository
+        ModPackSource modPackSource = new ModPackSource(modAssetsDir, permissiveValidator);
+        PackRepository repository = new PackRepository(clientPackSource, modPackSource);
 
         System.out.println("Reloading resource pack repo");
         repository.reload();
