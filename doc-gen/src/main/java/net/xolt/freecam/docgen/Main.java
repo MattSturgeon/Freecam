@@ -11,7 +11,6 @@ import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.locale.Language;
 import net.minecraft.server.Bootstrap;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -73,7 +72,7 @@ public class Main {
         System.out.println("Creating LanguageManager");
         LanguageManager languageManager = new LanguageManager(lang);
 
-        System.out.println("Creating PackRepository");
+        System.out.println("Creating resource pack repository");
         DirectoryValidator permissiveValidator = new DirectoryValidator(path -> true);
         Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
         PackRepository repository = new PackRepository(
@@ -81,20 +80,23 @@ public class Main {
                 new ModPackSource(modAssetsDir, permissiveValidator)
         );
 
-        System.out.println("Reloading resource pack repo");
+        System.out.println("Loading resource packs");
         repository.reload();
 
-        System.out.println("Creating ResourceManager");
+        System.out.println("Loading resources");
         try (ReloadableResourceManager resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES)) {
             resourceManager.registerReloadListener(languageManager);
 
-            List<PackResources> packs = repository.openAllSelected();
             resourceManager.createReload(
                     Util.backgroundExecutor(),
-                    Runnable::run,
+                    runnable -> {
+                        System.out.println("Running resources load callback");
+                        runnable.run();
+                    },
                     CompletableFuture.completedFuture(Unit.INSTANCE),
-                    packs);
+                    repository.openAllSelected());
         }
+        System.out.println("Finished loading resources");
 
         System.out.println("Setting Language selection");
         languageManager.setSelected(lang);
