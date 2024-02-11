@@ -78,11 +78,10 @@ public class Main {
         LanguageManager languageManager = new LanguageManager(lang);
 
         System.out.println("Creating resource pack repository");
-        DirectoryValidator permissiveValidator = new DirectoryValidator(path -> true);
         Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
         PackRepository repository = new PackRepository(
-                new ClientPackSource(realAssetsDir, permissiveValidator),
-                new ModPackSource(modId, modAssetsDir, permissiveValidator)
+                new ClientPackSource(realAssetsDir, new DirectoryValidator(path -> true)),
+                new ModPackSource(modId, modAssetsDir)
         );
 
         System.out.println("Loading resource packs");
