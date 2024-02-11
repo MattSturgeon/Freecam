@@ -73,12 +73,13 @@ public class Main {
         System.out.println("Creating LanguageManager");
         LanguageManager languageManager = new LanguageManager(lang);
 
-        Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
-
+        System.out.println("Creating PackRepository");
         DirectoryValidator permissiveValidator = new DirectoryValidator(path -> true);
-        ClientPackSource clientPackSource = new ClientPackSource(realAssetsDir, permissiveValidator);
-        ModPackSource modPackSource = new ModPackSource(modAssetsDir, permissiveValidator);
-        PackRepository repository = new PackRepository(clientPackSource, modPackSource);
+        Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
+        PackRepository repository = new PackRepository(
+                new ClientPackSource(realAssetsDir, permissiveValidator),
+                new ModPackSource(modAssetsDir, permissiveValidator)
+        );
 
         System.out.println("Reloading resource pack repo");
         repository.reload();
