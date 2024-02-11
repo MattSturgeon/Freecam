@@ -40,6 +40,7 @@ project(":common")
                         "--assetIndex", assetIndex,
                         "--assetsDir", minecraftAssets.toAbsolutePath(),
                         "--modAssetsDir", assets.toAbsolutePath(),
+                        "--modId", rootProject.name,
                         "--buildDir", outputDir.get().asFile.absolutePath,
                         "--lang", lang
                 ]

@@ -44,6 +44,9 @@ public class Main {
                 .accepts("modAssetsDir")
                 .withRequiredArg()
                 .ofType(File.class);
+        ArgumentAcceptingOptionSpec<String> modIdSpec = optionParser
+                .accepts("modId")
+                .withRequiredArg();
         ArgumentAcceptingOptionSpec<File> buildDirSpec = optionParser
                 .accepts("buildDir")
                 .withRequiredArg()
@@ -54,12 +57,14 @@ public class Main {
         String assetIndex = options.valueOf(assetIndexSpec);
         Path assetsDir = options.valueOf(assetsDirSpec).toPath();
         Path modAssetsDir = options.valueOf(modAssetsDirSpec).toPath();
+        String modId = options.valueOf(modIdSpec);
         Path buildDir = options.valueOf(buildDirSpec).toPath();
 
         printUnrecognised(options, unrecognisedArgsSpec);
         System.out.println("Asset Index: " + assetIndex);
         System.out.println("Assets Dir: " + assetsDir.toAbsolutePath());
         System.out.println("Mod Assets Dir: " + modAssetsDir.toAbsolutePath());
+        System.out.println("Mod ID: " + modId);
         System.out.println("Build Dir: " + buildDir.toAbsolutePath());
 
         // Validate we output dir
@@ -77,7 +82,7 @@ public class Main {
         Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
         PackRepository repository = new PackRepository(
                 new ClientPackSource(realAssetsDir, permissiveValidator),
-                new ModPackSource(modAssetsDir, permissiveValidator)
+                new ModPackSource(modId, modAssetsDir, permissiveValidator)
         );
 
         System.out.println("Loading resource packs");

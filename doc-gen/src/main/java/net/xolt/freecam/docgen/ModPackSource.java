@@ -12,6 +12,7 @@ import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.level.validation.DirectoryValidator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.FileSystems;
@@ -21,49 +22,44 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class ModPackSource
-extends BuiltInPackSource {
-    private static final PackMetadataSection VERSION_METADATA_SECTION = new PackMetadataSection(Component.translatable("resourcePack.vanilla.description"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), Optional.empty());
-    private static final BuiltInMetadata BUILT_IN_METADATA = BuiltInMetadata.of(PackMetadataSection.TYPE, VERSION_METADATA_SECTION);
-    private static final Component VANILLA_NAME = Component.translatable("resourcePack.vanilla.name");
-    private static final ResourceLocation PACKS_DIR = new ResourceLocation("freecam", "resourcepacks");
-    @Nullable
-    private final Path externalAssetDir;
+public class ModPackSource extends BuiltInPackSource {
+    private static final PackMetadataSection VERSION_METADATA_SECTION = new PackMetadataSection(Component.literal("Mod Resources"), SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES), Optional.empty());
+    private static final BuiltInMetadata METADATA = BuiltInMetadata.of(PackMetadataSection.TYPE, VERSION_METADATA_SECTION);
+    private final String namespace;
+    private final @Nullable Path externalAssetDir;
 
-    public ModPackSource(Path path, DirectoryValidator directoryValidator) {
-        super(PackType.CLIENT_RESOURCES, ModPackSource.createVanillaPackSource(path), PACKS_DIR, directoryValidator);
+    public ModPackSource(String namespace, Path path, DirectoryValidator directoryValidator) {
+        super(PackType.CLIENT_RESOURCES, ModPackSource.createVanillaPackSource(namespace, path), new ResourceLocation(namespace, "resourcepacks"), directoryValidator);
+        this.namespace = namespace;
         this.externalAssetDir = this.findExplodedAssetPacks(path);
     }
 
-    @Nullable
-    private Path findExplodedAssetPacks(Path assetIndex) {
+    private @Nullable Path findExplodedAssetPacks(Path assetsDir) {
         Path path;
-        if (SharedConstants.IS_RUNNING_IN_IDE && assetIndex.getFileSystem() == FileSystems.getDefault() && Files.isDirectory(path = assetIndex.getParent().resolve("resourcepacks"))) {
+        if (SharedConstants.IS_RUNNING_IN_IDE && assetsDir.getFileSystem() == FileSystems.getDefault() && Files.isDirectory(path = assetsDir.getParent().resolve("resourcepacks"))) {
             return path;
         }
         return null;
     }
 
-    private static VanillaPackResources createVanillaPackSource(Path assetIndex) {
-        VanillaPackResourcesBuilder vanillaPackResourcesBuilder = new VanillaPackResourcesBuilder().setMetadata(BUILT_IN_METADATA).exposeNamespace("freecam");
-        return vanillaPackResourcesBuilder.applyDevelopmentConfig().pushJarResources().pushAssetPath(PackType.CLIENT_RESOURCES, assetIndex).build();
+    private static VanillaPackResources createVanillaPackSource(String namespace, Path assetsDir) {
+        VanillaPackResourcesBuilder vanillaPackResourcesBuilder = new VanillaPackResourcesBuilder().setMetadata(METADATA).exposeNamespace(namespace);
+        return vanillaPackResourcesBuilder.applyDevelopmentConfig().pushJarResources().pushAssetPath(PackType.CLIENT_RESOURCES, assetsDir).build();
     }
 
     @Override
-    protected Component getPackTitle(String id) {
+    protected @NotNull Component getPackTitle(String id) {
         return Component.literal(id);
     }
 
     @Override
-    @Nullable
-    protected Pack createVanillaPack(PackResources resources) {
-        return Pack.readMetaAndCreate("freecam", VANILLA_NAME, true, ModPackSource.fixedResources(resources), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
+    protected @Nullable Pack createVanillaPack(PackResources resources) {
+        return Pack.readMetaAndCreate(namespace, VERSION_METADATA_SECTION.description(), true, ModPackSource.fixedResources(resources), PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
     }
 
     @Override
-    @Nullable
-    protected Pack createBuiltinPack(String id, Pack.ResourcesSupplier resources, Component title) {
-        return Pack.readMetaAndCreate(id, title, false, resources, PackType.CLIENT_RESOURCES, Pack.Position.TOP, PackSource.BUILT_IN);
+    protected @Nullable Pack createBuiltinPack(String id, Pack.ResourcesSupplier resources, Component title) {
+        return Pack.readMetaAndCreate(id, title, false, resources, PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
     }
 
     @Override
