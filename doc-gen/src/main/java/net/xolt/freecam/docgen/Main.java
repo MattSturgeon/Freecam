@@ -41,6 +41,10 @@ public class Main {
                 .accepts("assetsDir")
                 .withRequiredArg()
                 .ofType(File.class);
+        ArgumentAcceptingOptionSpec<File> modAssetsDirSpec = optionParser
+                .accepts("modAssetsDir")
+                .withRequiredArg()
+                .ofType(File.class);
         ArgumentAcceptingOptionSpec<File> buildDirSpec = optionParser
                 .accepts("buildDir")
                 .withRequiredArg()
@@ -50,11 +54,13 @@ public class Main {
         String lang = options.valueOf(langSpec);
         String assetIndex = options.valueOf(assetIndexSpec);
         Path assetsDir = options.valueOf(assetsDirSpec).toPath();
+        Path modAssetsDir = options.valueOf(modAssetsDirSpec).toPath();
         Path buildDir = options.valueOf(buildDirSpec).toPath();
 
         printUnrecognised(options, unrecognisedArgsSpec);
         System.out.println("Asset Index: " + assetIndex);
         System.out.println("Assets Dir: " + assetsDir.toAbsolutePath());
+        System.out.println("Mod Assets Dir: " + modAssetsDir.toAbsolutePath());
         System.out.println("Build Dir: " + buildDir.toAbsolutePath());
 
         // Validate we output dir
