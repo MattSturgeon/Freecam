@@ -28,8 +28,21 @@ project(":common")
                 doFirst { workingDir.mkdirs() }
 
                 def outputDir = layout.buildDirectory.dir "docs/${lang}"
-                args = [ lang, outputDir.get().asFile.absolutePath ]
                 outputs.dir outputDir
+                outputs.upToDateWhen { false }
+
+                def assets = project(":common").file("src/main/resources/assets").toPath()
+                def minecraftVersion = loom.minecraftVersion
+                def minecraftAssets = loom.files.userCache.toPath().resolve("assets")
+                def assetIndex = loom.minecraftProvider.versionInfo.assetIndex().fabricId(minecraftVersion)
+
+                args = [
+                        "--assetIndex", assetIndex,
+                        "--assetsDir", minecraftAssets.toAbsolutePath(),
+                        "--modAssetsDir", assets.toAbsolutePath(),
+                        "--buildDir", outputDir.get().asFile.absolutePath,
+                        "--lang", lang
+                ]
             }
 
             genTask.configure { dependsOn task }

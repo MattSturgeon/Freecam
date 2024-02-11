@@ -1,75 +1,106 @@
 package net.xolt.freecam.docgen;
 
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.NonOptionArgumentSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
+import net.minecraft.client.resources.ClientPackSource;
+import net.minecraft.client.resources.IndexedAssetSource;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.locale.Language;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ReloadInstance;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.util.Unit;
+import net.minecraft.world.level.validation.DirectoryValidator;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
     public static void main(String... args) throws IOException {
-        if (args.length != 2) {
-            System.err.println("Usage: genDocs [lang] [output_dir]");
-            System.exit(1);
-        }
+        OptionParser optionParser = new OptionParser();
+        optionParser.allowsUnrecognizedOptions();
+        NonOptionArgumentSpec<String> unrecognisedArgsSpec = optionParser.nonOptions();
+        ArgumentAcceptingOptionSpec<String> langSpec = optionParser
+                .accepts("lang")
+                .withRequiredArg()
+                .defaultsTo("en_us");
+        ArgumentAcceptingOptionSpec<String> assetIndexSpec = optionParser
+                .accepts("assetIndex")
+                .withRequiredArg();
+        ArgumentAcceptingOptionSpec<File> assetsDirSpec = optionParser
+                .accepts("assetsDir")
+                .withRequiredArg()
+                .ofType(File.class);
+        ArgumentAcceptingOptionSpec<File> buildDirSpec = optionParser
+                .accepts("buildDir")
+                .withRequiredArg()
+                .ofType(File.class);
 
-        String lang = args[0].toLowerCase().replace('-', '_');
-        Path outputDir = Paths.get(args[1]);
+        OptionSet options = optionParser.parse(args);
+        String lang = options.valueOf(langSpec);
+        String assetIndex = options.valueOf(assetIndexSpec);
+        Path assetsDir = options.valueOf(assetsDirSpec).toPath();
+        Path buildDir = options.valueOf(buildDirSpec).toPath();
 
-        // Verbose logging
-        System.out.println("Using language code: " + lang);
-        System.out.println("Using output directory: "+ outputDir.toAbsolutePath());
+        printUnrecognised(options, unrecognisedArgsSpec);
+        System.out.println("Asset Index: " + assetIndex);
+        System.out.println("Assets Dir: " + assetsDir.toAbsolutePath());
+        System.out.println("Build Dir: " + buildDir.toAbsolutePath());
 
         // Validate we output dir
-        validateOutputDir(outputDir);
+        validateOutputDir(buildDir);
 
         System.out.println("Bootstrapping Minecraft");
         bootstrapMinecraft();
 
+
+        System.out.println("Creating LanguageManager");
+        LanguageManager languageManager = new LanguageManager(lang);
+
+        Path realAssetsDir = IndexedAssetSource.createIndexFs(assetsDir, assetIndex);
+
+        DirectoryValidator permissiveValidator = new DirectoryValidator(path -> true);
+        ClientPackSource clientPackSource = new ClientPackSource(realAssetsDir, permissiveValidator);
+        PackRepository repository = new PackRepository(clientPackSource);
+        // FIXME need to add freecam assets to repository
+
+        System.out.println("Reloading resource pack repo");
+        repository.reload();
+
         System.out.println("Creating ResourceManager");
         try (ReloadableResourceManager resourceManager = new ReloadableResourceManager(PackType.CLIENT_RESOURCES)) {
-            LanguageManager languageManager = new LanguageManager(lang);
             resourceManager.registerReloadListener(languageManager);
 
-            // FIXME need to add mc & freecam assets to resourceManager, then reload
-
-
-            List<PackResources> packs = Collections.emptyList();
-            ReloadInstance reloadInstance = resourceManager.createReload(
+            List<PackResources> packs = repository.openAllSelected();
+            resourceManager.createReload(
                     Util.backgroundExecutor(),
-                    command -> System.out.println("Reload command: ".formatted(command)),
+                    Runnable::run,
                     CompletableFuture.completedFuture(Unit.INSTANCE),
                     packs);
-
-            while (!reloadInstance.isDone()) {
-                System.out.printf("Reload progress: %01.2f%%%n", reloadInstance.getActualProgress() * 100f);
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
+
+        System.out.println("Setting Language selection");
+        languageManager.setSelected(lang);
 
         System.out.println("Getting Language instance");
         Language language = Language.getInstance();
         System.out.println("Language instance: " + language);
 
         System.out.println("%s: %s".formatted("gui.done", language.getOrDefault("gui.done", "<failed>")));
+        System.out.println("%s: %s".formatted("key.freecam.toggle", language.getOrDefault("key.freecam.toggle", "<failed>")));
 
 
-        Files.createDirectories(outputDir);
+        Files.createDirectories(buildDir);
     }
 
     private static void validateOutputDir(Path outputDir) throws IOException {
@@ -87,6 +118,20 @@ public class Main {
                 throw e;
             }
         }
+    }
+
+    private static void printUnrecognised(OptionSet options, NonOptionArgumentSpec<?> unrecognised) {
+        if (!options.has(unrecognised)) {
+            return;
+        }
+        List<?> args = options.valuesOf(unrecognised);
+        if (args.isEmpty()) {
+            return;
+        }
+
+        System.err.println("Ignored arguments:");
+        args.forEach(arg -> System.err.println("    " + arg));
+        System.err.println();
     }
 
     private static void bootstrapMinecraft() {
