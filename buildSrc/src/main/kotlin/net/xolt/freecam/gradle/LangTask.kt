@@ -60,6 +60,7 @@ abstract class LangTask : DefaultTask() {
 
     private val json = Json { prettyPrint = true }
     private val localeRegex = "^[a-z]{2}-[A-Z]{2}$".toRegex()
+    private val remappedKeys = mutableListOf<Pair<String, String>>()
 
     init {
         source.convention("en-US")
@@ -75,7 +76,8 @@ abstract class LangTask : DefaultTask() {
             refProcessor,
             VariantTooltipProcessor(variant.get()),
             ModDescriptionProcessor(modId.get(), variant.get()),
-            ModNameProcessor(modId.get(), variant.get())
+            ModNameProcessor(modId.get(), variant.get()),
+            RemapProcessor(remappedKeys)
         )
 
         val languages = inputDirectory.get().asFile
@@ -119,6 +121,13 @@ abstract class LangTask : DefaultTask() {
         } else {
             translation
         }
+    }
+
+    /**
+     * Configure a custom remapping to be applied by [RemapProcessor].
+     */
+    fun remap(from: String, vararg to: String) {
+        to.forEach { remappedKeys.add(from to it) }
     }
 
     private fun fileFor(lang: String) = outputDirectory.get().asFile
