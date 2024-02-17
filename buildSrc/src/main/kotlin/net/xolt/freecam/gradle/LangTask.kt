@@ -71,6 +71,7 @@ abstract class LangTask : DefaultTask() {
     @TaskAction
     fun build() {
         val processors = listOf(
+            refProcessor,
             VariantTooltipProcessor(variant.get()),
             ModDescriptionProcessor(modId.get(), variant.get()),
             ModNameProcessor(modId.get(), variant.get())
