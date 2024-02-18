@@ -14,6 +14,8 @@ variants.each { variant ->
         outputDirectory = layout.buildDirectory.dir("i18n/${variant}")
         modId = rootProject.name
         setVariant(variant)
+        remap("thing", "value")
+        remap("thing", "other")
     }
 
     platforms.each { platform ->

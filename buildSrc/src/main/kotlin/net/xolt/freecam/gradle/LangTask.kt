@@ -75,8 +75,6 @@ abstract class LangTask : DefaultTask() {
             VariantProcessor(variant.get()),
             refProcessor,
             VariantTooltipProcessor(variant.get()),
-            ModDescriptionProcessor(modId.get(), variant.get()),
-            ModNameProcessor(modId.get(), variant.get()),
             RemapProcessor(remappedKeys)
         )
 

@@ -1,6 +1,10 @@
 {
+  "freecam.display_name": "{freecam.name} {freecam.name.suffix}",
   "freecam.name": "Freecam",
-  "freecam.name.modrinth": "(Modrinth Edition)",
-  "freecam.description": "A highly customizable freecam mod.",
-  "freecam.description.modrinth": "Some features have been restricted to comply with Modrinth's Content Rules."
+  "freecam.name.suffix": "",
+  "freecam.name.suffix:modrinth": "(Modrinth Edition)",
+  "freecam.description": "{freecam.summary} {freecam.variant_notes}",
+  "freecam.summary": "A highly customizable freecam mod.",
+  "freecam.variant_notes": "",
+  "freecam.variant_notes:modrinth": "Some features have been restricted to comply with Modrinth's Content Rules."
 }
