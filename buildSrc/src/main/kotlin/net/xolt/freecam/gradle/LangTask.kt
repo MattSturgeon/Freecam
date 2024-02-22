@@ -41,6 +41,14 @@ abstract class LangTask : DefaultTask() {
     abstract val source: Property<String>
 
     /**
+     * The "build variant" being targeted.
+     *
+     * Defaults to `""`.
+     */
+    @get:Input
+    abstract val variant: Property<String>
+
+    /**
      * Custom filename provider.
      *
      * A filename provider takes a lang string and returns a filename (or relative path).
@@ -62,6 +70,8 @@ abstract class LangTask : DefaultTask() {
     init {
         @Suppress("LeakingThis")
         source.convention("en-US")
+        @Suppress("LeakingThis")
+        variant.convention("")
     }
 
     /**
@@ -84,12 +94,14 @@ abstract class LangTask : DefaultTask() {
 
         // Handle the "source" language separately
         val base = languages.remove(source.get())?.let {
-            buildLang(source.get(), it)
+            val translations = Translations(it, variant.get())
+            buildLang(source.get(), translations)
+            translations
         }
 
         // Handle the "translation" languages
         languages.forEach { (lang, translations) ->
-            buildLang(lang, translations, base)
+            buildLang(lang, Translations(translations, variant.get(), base))
         }
     }
 
@@ -100,11 +112,10 @@ abstract class LangTask : DefaultTask() {
     // Returns the built translations
     private fun buildLang(
         lang: String,
-        translations: Map<String, String>,
-        fallback: Map<String, String>? = null
+        translations: Translations,
     ): Map<String, String> {
         val built = transformers
-            .fold(translations) { acc, transformer -> transformer.transform(acc, fallback) }
+            .fold(translations.toMap()) { acc, fn -> fn.transform(acc, translations) }
             .toSortedMap()
         writeJsonFile(fileFor(lang), built)
         return built

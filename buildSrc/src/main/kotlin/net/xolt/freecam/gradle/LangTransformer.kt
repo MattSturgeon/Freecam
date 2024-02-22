@@ -8,7 +8,7 @@ fun interface LangTransformer {
      * Transform the provided [translations] and return the result.
      */
     fun transform(
-        translations: Map<String, String>,
-        fallback: Map<String, String>?
+        transformed: Map<String, String>,
+        translations: Translations
     ): Map<String, String>
 }

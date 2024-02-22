@@ -13,7 +13,10 @@ internal fun processorTest(
     fallback: Map<String, String>? = null,
     result: Map<String, String>,
 ): DynamicTest {
+    // FIXME variant
+    val f = fallback?.let { Translations(it, "") }
+    val t = Translations(translations, "", f)
     return DynamicTest.dynamicTest(name) {
-        assertEquals(result, processor.transform(translations, fallback))
+        assertEquals(result, processor.transform(t.toMap(), t))
     }
 }
