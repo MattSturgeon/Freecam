@@ -24,6 +24,11 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: Debug
+        run: |
+          ls -la ./build/lib
+          ls -la **/build/lib
+
         # Upload all jars as `jars.zip`
         # TODO consider uploading individually, using a build matrix
       - name: Upload
