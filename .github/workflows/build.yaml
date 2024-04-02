@@ -47,13 +47,6 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Debug
-        run: |
-          pwd
-          ls -la .
-          ls -la /home/runner/work/Freecam/Freecam
-          tree
-
         # Upload separately, or they'll be zipped together
       - name: Upload all builds
         uses: actions/upload-artifact@v4
