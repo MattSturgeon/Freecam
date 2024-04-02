@@ -51,7 +51,7 @@ jobs:
       - name: Upload all builds
         uses: actions/upload-artifact@v4
         with:
-          name: all-builds.zip
+          name: all-builds-${{ steps.data.outputs.name_suffix }}.zip
           path: build/libs
           retention-days: 30
           if-no-files-found: error
