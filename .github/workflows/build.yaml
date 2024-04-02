@@ -26,8 +26,10 @@ jobs:
 
       - name: Debug
         run: |
-          ls -la ./build/lib
-          ls -la **/build/lib
+          pwd
+          ls -la .
+          ls -la /home/runner/work/Freecam/Freecam
+          tree
 
         # Upload all jars as `jars.zip`
         # TODO consider uploading individually, using a build matrix
