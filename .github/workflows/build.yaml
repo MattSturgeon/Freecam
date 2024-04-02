@@ -37,3 +37,4 @@ jobs:
           name: jars
           path: build/lib
           retention-days: 90
+          if-no-files-found: error
