@@ -4,7 +4,6 @@ import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.tasks.BaseChangelogTask
 
 plugins {
-    id("com.gradle.enterprise") version("3.16.2")
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
     id "com.hypherionmc.modutils.modpublisher" version "2.0.5" apply false
@@ -33,17 +32,6 @@ tasks.withType(BaseChangelogTask).configureEach {
 afterEvaluate {
     tasks.jar.enabled = false
     tasks.sourcesJar.enabled = false
-}
-
-// Publish build scans in CI workflows
-gradleEnterprise {
-    if (System.getenv("CI") != null) {
-        buildScan {
-            publishAlways()
-            termsOfServiceUrl = "https://gradle.com/terms-of-service"
-            termsOfServiceAgree = "yes"
-        }
-    }
 }
 
 architectury {
