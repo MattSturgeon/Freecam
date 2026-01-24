@@ -73,6 +73,15 @@ tasks.named("createMinecraftArtifacts") {
 }
 
 tasks.processResources {
+    from(project(":neoforge").layout.projectDirectory) {
+        include("neoforge.mods.toml")
+        rename { "META-INF/$it" }  // now rename works
+    }
+
+    filesMatching("neoforge.mods.toml") {
+        expand(commonJsonExpansions)
+    }
+
     filesMatching(listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")) {
         expand(commonExpansions)
     }

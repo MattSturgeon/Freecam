@@ -59,6 +59,8 @@ tasks.register<Copy>("buildAndCollect") {
 
 tasks {
     processResources {
+        from(project(":fabric").layout.projectDirectory.file("fabric.mod.json"))
+
         filesMatching("fabric.mod.json") {
             expand(commonJsonExpansions)
         }
