@@ -36,7 +36,7 @@ def test_build_matrix_basic():
     }
     version = "1.2.3"
     matrix = build_matrix(version, data)
-    assert len(matrix) == 5
+    assert len(matrix) == 6
     names = [job.name for job in matrix]
     assert "Build 1.20" in names
     assert "Build 1.21" in names

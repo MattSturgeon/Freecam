@@ -65,6 +65,15 @@ def build_matrix(
             gradle_args=["--project-dir", "build-logic", ":check"],
         )
     )
+    matrix.append(
+        MatrixJob(
+            name="Build release publisher",
+            gradle_args=[":publish:check", ":publish:distTar"],
+            upload_name="release-publisher",
+            upload_path="publish/build/distributions/*.tar",
+            upload_days=5,
+        )
+    )
 
     return matrix
 
