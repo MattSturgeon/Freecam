@@ -19,9 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      contents: read
+      # Grant 'write' to access draft releases.
+      contents: write
     outputs:
       version: ${{ steps.version.outputs.result }}
+      do_release: ${{ steps.check_release.outputs.doRelease }}
       matrix: ${{ steps.matrix.outputs.result }}
 
     steps:
@@ -45,6 +47,54 @@ jobs:
           version: ${{ steps.version.outputs.result }}
         run: |
           echo "version=$version" >> "$GITHUB_ENV"
+
+      - name: Check if a release should be made
+        id: check_release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/github-script@v8
+        env:
+          VERSION: ${{ steps.version.outputs.result }}
+        with:
+          script: |
+            const tag = `v${process.env.VERSION}`
+            try {
+              const release = await getReleaseByTag(tag)
+
+              if (!release) {
+                setDoRelease(true, `${tag} has no release, doing a release`)
+                return
+              }
+
+              if (release.isDraft) {
+                setDoRelease(true, `${tag} is a draft, doing a release`)
+                return
+              }
+
+              setDoRelease(false, `${tag} is already published, skipping release`)
+            } catch (e) {
+              core.error(`Error checking for release ${tag}`)
+              throw e
+            }
+
+            async function getReleaseByTag(tag) {
+              const result = await github.graphql(`
+                query($owner: String!, $repo: String!, $tag: String!) {
+                  repository(owner: $owner, name: $repo) {
+                    release(tagName: $tag) {
+                      isDraft
+                    }
+                  }
+                }`,
+                { ...context.repo, tag },
+              )
+
+              return result?.repository?.release
+            }
+
+            function setDoRelease(doRelease, message) {
+                core.info(message)
+                if (doRelease) core.setOutput("doRelease", "true")
+            }
 
       - name: Generate build matrix
         id: matrix
@@ -72,6 +122,13 @@ jobs:
                 {
                   "name": "Build logic tests",
                   "gradle_args": ["--project-dir", "build-logic", ":check"]
+                },
+                {
+                  "name": "Build release publisher",
+                  "gradle_args": [":publish:check", ":publish:distTar"],
+                  "upload_name": "release-publisher",
+                  "upload_path": "publish/build/distributions/*.tar",
+                  "upload_days": 5
                 }
               ]
             ' stonecutter.versions.toml
@@ -118,7 +175,7 @@ jobs:
         with:
           name: ${{ matrix.upload_name }}
           path: ${{ matrix.upload_path }}
-          retention-days: 90
+          retention-days: ${{ matrix.upload_days || '90' }}
           if-no-files-found: error
 
       - name: Upload summary
@@ -127,6 +184,7 @@ jobs:
         env:
           upload_name: ${{ matrix.upload_name }}
           upload_path: ${{ matrix.upload_path }}
+          upload_days: ${{ matrix.upload_days || '90' }}
           upload_url: ${{ steps.upload.outputs.artifact-url }}
         run: |
           {
@@ -144,6 +202,57 @@ jobs:
             echo
             echo "**Download:** [$upload_name.zip]($upload_url)"
             echo
-            echo "_Expires on **$(date --utc --date=+90days +%F)** (UTC)._"
+            echo "_Expires on **$(date --utc --date=+"$upload_days"days +%F)** (UTC)._"
             echo
           } >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    if: needs.prepare.outputs.do_release || github.event.pull_request
+    name: Publish ${{ github.event.pull_request && '(dry run)' || '' }}
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    permissions:
+      # Grant 'write' to create releases.
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+
+      - name: Install release publisher
+        env:
+          version: ${{ needs.prepare.outputs.version }}
+        run: |
+          tar --extract --file="artifacts/publish-$version.tar"
+          echo "$PWD/publish-$version/bin" >> "$GITHUB_PATH"
+
+      - name: Publish release
+        env:
+          do_release: ${{ needs.prepare.outputs.do_release }}
+        run: |
+          args=(
+            # Directory where artifacts were downloaded.
+            artifacts
+          )
+          [ "$do_release" = "true" ] || {
+            echo "::notice::Doing a dry run release"
+            args+=(
+              --dry-run
+            
+              # pull_request events cannot access secrets.
+              # Regardless, define stubs to avoid accidents.
+              --gh-token github_token
+            )
+          }
+          publish "${args[@]}"
