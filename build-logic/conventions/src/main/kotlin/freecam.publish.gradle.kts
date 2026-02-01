@@ -7,24 +7,24 @@ plugins {
 }
 
 publisher {
-    curseID = meta.curseforgeId
-    modrinthID = meta.modrinthId
+    curseID = mod.meta.curseforgeId
+    modrinthID = mod.meta.modrinthId
 
     github {
         // Extract our repo slug from the github URL
-        repo(meta.sourceUrl.toString().removePrefix("https://github.com/"))
+        repo(mod.meta.sourceUrl.toString().removePrefix("https://github.com/"))
 
         // Canonical tag (not the annotated build tag)
-        tag("v${meta.version}")
+        tag("v${mod.meta.version}")
         draft(true)
     }
 
     // Format display name, e.g. "1.2.4 for MC 1.20.4 (fabric)"
     displayName =
-        "${meta.version} for MC ${currentMod.mc} (${loader})"
+        "${mod.meta.version} for MC ${currentMod.mc} (${mod.loader})"
 
-    projectVersion = meta.version
-    versionType = meta.releaseType.toString()
+    projectVersion = mod.meta.version
+    versionType = mod.meta.releaseType.toString()
     curseEnvironment = "client"
 
     loaders = listOf(project.name)
@@ -33,7 +33,7 @@ publisher {
     // Get the changelog entry using the changelog plugin
     changelog.set(provider {
         val plugin = rootProject.extensions.getByType(ChangelogPluginExtension::class.java)
-        val version = meta.version
+        val version = mod.meta.version
 
         if (!plugin.has(version)) {
             logger.warn("No changelog for \"$version\". Using \"unreleased\" instead.")
@@ -54,7 +54,7 @@ publisher {
         val primary = currentMod.mc
         val common = currentMod.propOrNull(prop).orEmpty()
         val specific =
-            rootProject.findProperty("${loader}_$prop")?.toString().orEmpty()
+            rootProject.findProperty("${mod.loader}_$prop")?.toString().orEmpty()
 
         (common.split(",") + specific.split(",") + primary)
             .map { it.trim() }

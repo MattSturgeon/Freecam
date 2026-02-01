@@ -7,6 +7,7 @@ import net.xolt.freecam.model.ModMetadata
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import org.gradle.kotlin.dsl.add
+import java.io.File
 
 @Serializable
 private data class Metadata(
@@ -15,16 +16,19 @@ private data class Metadata(
 
 class ModMetadataSettingsPlugin : Plugin<Settings> {
     override fun apply(settings: Settings) {
-        val name = "meta"
-        val file = settings.rootDir.resolve("metadata.toml")
-        val toml = file.readText()
-        val metadata = Toml.decodeFromString<Metadata>(toml)
+        val metadata = loadMetadata(
+            file = settings.rootDir.resolve("metadata.toml")
+        )
 
-        settings.extensions.add<ModMetadata>(name, metadata.mod)
+        settings.extensions.add<BaseFreecamModExtension>("mod", SettingsModExtension(metadata.mod))
+
         settings.gradle.settingsEvaluated {
             gradle.allprojects {
-                extensions.add(name, metadata.mod)
+                val extension: FreecamModExtension = ProjectModExtension(this, metadata.mod)
+                extensions.add("mod", extension)
             }
         }
     }
+
+    private fun loadMetadata(file: File): Metadata = Toml.decodeFromString<Metadata>(file.readText())
 }

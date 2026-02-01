@@ -50,7 +50,7 @@ neoForge {
     }
 
     mods {
-        register(meta.id) {
+        register(mod.meta.id) {
             sourceSet(sourceSets.main.get())
         }
     }
@@ -64,7 +64,7 @@ sourceSets.main {
 tasks.register<Copy>("buildAndCollect") {
     group = "build"
     from(tasks.jar.map { it.archiveFile })
-    into(rootProject.layout.buildDirectory.file("libs/${meta.version}"))
+    into(rootProject.layout.buildDirectory.file("libs/${mod.meta.version}"))
     dependsOn(tasks.build)
 }
 

@@ -55,7 +55,7 @@ loom {
 tasks.register<Copy>("buildAndCollect") {
     group = "build"
     from(tasks.remapJar.map { it.archiveFile })
-    into(rootProject.layout.buildDirectory.file("libs/${meta.version}"))
+    into(rootProject.layout.buildDirectory.file("libs/${mod.meta.version}"))
     dependsOn(tasks.build)
 }
 
