@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":api"))
     implementation(plugin(libs.plugins.stonecutter))
     implementation(plugin(libs.plugins.foojay.resolver))
+    implementation(libs.kotlin.serialization.json)
     implementation(libs.kotlin.serialization.toml)
     testImplementation(kotlin("test"))
     testImplementation(gradleTestKit())
