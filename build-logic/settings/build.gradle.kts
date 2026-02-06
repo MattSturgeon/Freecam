@@ -8,6 +8,8 @@ plugins {
 
 dependencies {
     implementation(project(":api"))
+    implementation(libs.asm)
+    implementation(libs.asm.commons)
     implementation(plugin(libs.plugins.stonecutter))
     implementation(plugin(libs.plugins.foojay.resolver))
     implementation(libs.kotlin.serialization.toml)
@@ -32,6 +34,10 @@ gradlePlugin {
         create("modMetadata") {
             id = "freecam.modmetadata"
             implementationClass = "net.xolt.freecam.gradle.ModMetadataSettingsPlugin"
+        }
+        create("modLibraries") {
+            id = "freecam.modlibraries"
+            implementationClass = "net.xolt.freecam.gradle.ModLibrariesSettingsPlugin"
         }
     }
 }

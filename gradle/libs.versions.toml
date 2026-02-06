@@ -1,4 +1,5 @@
 [versions]
+asm = "9.9.1"
 kotlin = "2.2.0"
 stonecutter = "0.8.3"
 fabric-loom = "1.14-SNAPSHOT"
@@ -14,6 +15,8 @@ kotest = "6.1.2"
 mockk = "1.14.9"
 
 [libraries]
+asm = { group = "org.ow2.asm", name = "asm", version.ref = "asm" }
+asm-commons = { group = "org.ow2.asm", name = "asm-commons", version.ref = "asm" }
 mapping-io = { group = "net.fabricmc", name = "mapping-io", version.ref = "mapping-io"}
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
 kotlin-serialization-toml = { group = "dev.eav.tomlkt", name = "tomlkt", version.ref = "tomlkt" }
