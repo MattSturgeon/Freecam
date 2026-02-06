@@ -10,6 +10,9 @@ stonecutter {
 
 }
 
+// TODO: debugging
+println(modLibraries.fabricApi)
+
 dependencies {
     minecraft("com.mojang:minecraft:${meta.mc}")
     mappings(loom.layered {
