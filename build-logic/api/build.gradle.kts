@@ -5,4 +5,10 @@ plugins {
 
 dependencies {
     implementation(libs.kotlin.serialization.json)
+    testImplementation(kotlin("test"))
+    testImplementation(libs.kotest.assertions)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
