@@ -14,29 +14,68 @@ stonecutter {
 println(modLibraries.fabricApi)
 
 dependencies {
-    minecraft("com.mojang:minecraft:${meta.mc}")
+    "com.mojang:minecraft:${meta.mc}".also { old ->
+        val new = modLibraries.minecraft.maven.coordinate
+        require(old == new)
+        minecraft(new)
+    }
     mappings(loom.layered {
         officialMojangMappings()
+        meta.deps.orNull("parchment").also { old ->
+            val new = modLibraries.parchment
+            require((old == null) == (new == null)) {
+                "${project.path} old $old, new $new"
+            }
+        }
         meta.parchment { mappings, mc ->
-            parchment("org.parchmentmc.data:parchment-${mc}:$mappings@zip")
+            "org.parchmentmc.data:parchment-${mc}:$mappings@zip".also { old ->
+                val new = modLibraries.parchment!!.maven.coordinate
+                require(old == new) {
+                    "${project.path} old $old, new $new"
+                }
+                parchment(new)
+            }
         }
     })
-
-    modImplementation("net.fabricmc:fabric-loader:${meta.deps["fabric_loader"]}")
-    modApi("net.fabricmc.fabric-api:fabric-api:${meta.deps["fabric_api"]}") {
-        exclude(module = "fabric-loader")
+    "net.fabricmc:fabric-loader:${meta.deps["fabric_loader"]}".also { old ->
+        val new = modLibraries.fabricLoader.maven.coordinate
+        require(old == new) {
+            "${project.path} old $old new $new"
+        }
+        modImplementation(new)
+    }
+    "net.fabricmc.fabric-api:fabric-api:${meta.deps["fabric_api"]}".also { old ->
+        val new = modLibraries.fabricApi.maven.coordinate
+        require(old == new) {
+            "${project.path} old $old, new $new"
+        }
+        modApi(new) {
+            exclude(module = "fabric-loader")
+        }
     }
 
-    modImplementation("com.terraformersmc:modmenu:${meta.deps["modmenu"]}") {
-        exclude(module = "fabric-api")
-        exclude(module = "fabric-loader")
+    "com.terraformersmc:modmenu:${meta.deps["modmenu"]}".also { old ->
+        val new = modLibraries.modmenu.maven.coordinate
+        require(old == new) {
+            "${project.path} old $old, new $new"
+        }
+        modImplementation(new) {
+            exclude(module = "fabric-api")
+            exclude(module = "fabric-loader")
+        }
     }
 
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${meta.deps["cloth"]}") {
-        exclude(module = "fabric-api")
-        exclude(module = "fabric-loader")
+    "me.shedaniel.cloth:cloth-config-fabric:${meta.deps["cloth"]}".also { old ->
+        val new = modLibraries.clothConfig.maven.coordinate
+        require(old == new) {
+            "${project.path} old $old, new $new"
+        }
+        modApi(new) {
+            exclude(module = "fabric-api")
+            exclude(module = "fabric-loader")
+        }
+        include(new)
     }
-    include("me.shedaniel.cloth:cloth-config-fabric:${meta.deps["cloth"]}")
 }
 
 loom {

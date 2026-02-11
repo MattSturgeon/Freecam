@@ -19,8 +19,14 @@ neoForge {
 }
 
 dependencies {
-    api("me.shedaniel.cloth:cloth-config-neoforge:${meta.deps["cloth"]}")
-    jarJar(implementation("me.shedaniel.cloth:cloth-config-neoforge:${meta.deps["cloth"]}") as Any)
+    "me.shedaniel.cloth:cloth-config-neoforge:${meta.deps["cloth"]}".also { old ->
+        val new = modLibraries.clothConfig.maven.coordinate
+        require(old == new) {
+            "${project.path} old $old new $new"
+        }
+        api(new)
+        jarJar(implementation(new) as Any)
+    }
 }
 
 neoForge {
@@ -41,10 +47,15 @@ neoForge {
 //        }
     }
 
-    parchment {
-        meta.parchment { mappings, mc ->
-            minecraftVersion = mc
-            mappingsVersion = mappings
+    require((modLibraries.parchment == null) == (meta.deps.orNull("parchment") == null))
+    modLibraries.parchment?.also {
+        parchment {
+            minecraftVersion = it.maven.name.substringAfter('-')
+            mappingsVersion = it.maven.version
+            meta.parchment { mappings, mc ->
+                require(mc == it.maven.name.substringAfter('-'))
+                require(mappings == it.maven.version)
+            }
         }
     }
 

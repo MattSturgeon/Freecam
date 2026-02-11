@@ -67,31 +67,37 @@ modLibraries {
 
     buildOnly("parchment", required = false) {
         group = "org.parchmentmc.data"
-        name = "parchment-${when (project.mc) {
-            "1.20.6" -> "1.20.6"
-            "1.21.11" -> "1.21.11"
+        name = when (project.mc) {
+            "1.17.1" -> "parchment-1.17.1"
+            "1.18.2" -> "parchment-1.18.2"
+            "1.19.4" -> "parchment-1.19.4"
+            "1.20.6" -> "parchment-1.20.6"
+            "1.21.11" -> "parchment-1.21.10"
             else -> null
-        }}"
+        }
         version = when (project.mc) {
+            "1.17.1" -> "2021.12.12"
+            "1.18.2" -> "2022.11.06"
+            "1.19.4" -> "2023.06.26"
             "1.20.6" -> "2024.06.16"
-            "1.21.11" -> "2024.11.17"
+            "1.21.11" -> "2025.10.12"
             else -> null
         }
         extension = "zip"
     }
 
+    // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/mixin
+    // TODO: move to version catalog
+    buildOnly("mixin") {
+        group = "org.spongepowered"
+        name = "mixin"
+        version = "0.8.5"
+    }
+
     runtime("fabric-loader") {
         group = "net.fabricmc"
         name = "fabric-loader"
-        version = when (project.mc) {
-            "1.16.5" -> "0.12.11"
-            "1.17.1" -> "0.12.11"
-            "1.18.2" -> "0.12.11"
-            "1.19.4" -> "0.12.11"
-            "1.20.6" -> "0.18.0"
-            "1.21.11" -> "0.18.0"
-            else -> error("Unhandled mcVersion for fabric-loader: ${project.mc}")
-        }
+        version = "0.18.0"
 
         requires {
             semver = when (project.mc) {
@@ -99,8 +105,8 @@ modLibraries {
                 "1.17.1" -> ">=0.12.11"
                 "1.18.2" -> ">=0.12.11"
                 "1.19.4" -> ">=0.12.11"
-                "1.20.6" -> ">=0.12.11"
-                "1.21.11" -> ">=0.18.0"
+                "1.20.6" -> ">=0.14.0"
+                "1.21.11" -> ">=0.14.0"
                 else -> error("Unhandled mcVersion for fabric-loader requirement: ${project.mc}")
             }
 
@@ -180,7 +186,8 @@ modLibraries {
     published("cloth-config") {
         group = "me.shedaniel.cloth"
         name = when (project.loader) {
-            "fabric" -> "cloth-config-fabric"
+            // TODO: use api-only artifact for :common
+            "fabric", "common" -> "cloth-config-fabric"
             "forge" -> "cloth-config-forge"
             "neoforge" -> "cloth-config-neoforge"
             else -> error("Unknown loader: ${project.loader}")
@@ -219,19 +226,19 @@ modLibraries {
         group = "net.minecraftforge"
         name = "forge"
         version = when (project.mc) {
-            "1.17.1" -> "36.2.41"
-            "1.18.2" -> "37.1.1"
-            "1.19.4" -> "40.2.14"
-            "1.20.6" -> "45.2.6"
+            "1.16.5" -> "36.2.41"
+            "1.17.1" -> "37.1.1"
+            "1.18.2" -> "40.2.14"
+            "1.19.4" -> "45.2.6"
             else -> error("Unhandled mcVersion for forge: ${project.mc}")
         }
 
         requires {
             maven = when (project.mc) {
-                "1.17.1" -> "[34,)"
-                "1.18.2" -> "[37,)"
-                "1.19.4" -> "[40,)"
-                "1.20.6" -> "[45,)"
+                "1.16.5" -> "[34,)"
+                "1.17.1" -> "[37,)"
+                "1.18.2" -> "[40,)"
+                "1.19.4" -> "[45,)"
                 else -> error("Unhandled mcVersion for forge runtime requirement: ${project.mc}")
             }
 

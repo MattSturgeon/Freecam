@@ -19,14 +19,32 @@ fletchingTable {
 
 legacyForge {
     enable {
-        forgeVersion = "${meta.mc}-${meta.deps["forge"]}"
+        meta.deps["forge"].also { old ->
+            val new = modLibraries.forge.maven.version
+            require(old == new) {
+                "${project.path} old $old new $new"
+            }
+            forgeVersion = "${meta.mc}-$new"
+        }
     }
 }
 
 dependencies {
+    // TODO: move to version catalog
     compileOnlyApi("org.jetbrains:annotations:26.0.2")
+    // TODO: move to version catalog
     annotationProcessor("org.spongepowered:mixin:${meta.deps["mixin"]}:processor")
-    forgeDependency(group = "me.shedaniel.cloth", name = "cloth-config-forge", version = meta.deps["cloth"])
+
+    "me.shedaniel.cloth:cloth-config-forge:${meta.deps["cloth"]}".also { old ->
+        val dep = modLibraries.clothConfig.maven
+        val new = dep.coordinate
+        require(old == new) {
+            "${project.path} old $old new $new"
+        }
+        compileOnly(new)
+        modRuntimeOnly(new)
+        jarJar(modImplementation(group = dep.group, name = dep.name, version = dep.version))
+    }
 }
 
 legacyForge {
@@ -45,10 +63,15 @@ legacyForge {
 //        }
     }
 
-    parchment {
-        meta.parchment { mappings, mc ->
-            minecraftVersion = mc
-            mappingsVersion = mappings
+    require((modLibraries.parchment == null) == (meta.deps.orNull("parchment") == null))
+    modLibraries.parchment?.also {
+        parchment {
+            minecraftVersion = it.maven.name.substringAfter('-')
+            mappingsVersion = it.maven.version
+            meta.parchment { mappings, mc ->
+                require(mc == it.maven.name.substringAfter('-'))
+                require(mappings == it.maven.version)
+            }
         }
     }
 
@@ -98,10 +121,4 @@ tasks.jar {
 
 publisher {
     artifact.set(tasks.named("jar"))
-}
-
-fun DependencyHandlerScope.forgeDependency(group: String, name: String, version: String) {
-    compileOnly(group, name, version)
-    modRuntimeOnly(group, name, version)
-    jarJar(modImplementation(group, name, version))
 }
