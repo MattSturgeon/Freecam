@@ -1,0 +1,24 @@
+package net.xolt.freecam.publish.platforms
+
+import net.xolt.freecam.model.ReleaseMetadata
+import net.xolt.freecam.publish.model.ReleaseArtifact
+
+interface CurseForgePlatform : Platform { companion object }
+
+fun CurseForgePlatform.Companion.create(dryRun: Boolean = false) =
+    if (dryRun) DryRunCurseForgePlatform()
+    else DefaultCurseForgePlatform()
+
+internal class DryRunCurseForgePlatform : CurseForgePlatform {
+    override suspend fun publishRelease(metadata: ReleaseMetadata, artifacts: List<ReleaseArtifact>) {
+        artifacts.forEach {
+            println("[dry-run][curseforge] ${metadata.modVersion} upload ${it.artifact}")
+        }
+    }
+}
+
+internal class DefaultCurseForgePlatform : CurseForgePlatform {
+    override suspend fun publishRelease(metadata: ReleaseMetadata, artifacts: List<ReleaseArtifact>) {
+        TODO("Not yet implemented")
+    }
+}
