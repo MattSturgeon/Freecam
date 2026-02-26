@@ -34,4 +34,11 @@ stonecutter {
     }
 }
 
+include(
+    "publish",
+    "publish:api",
+    "publish:cli",
+    "publish:platforms",
+)
+
 rootProject.name = "freecam"

@@ -1,0 +1,19 @@
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+    `java-test-fixtures`
+}
+
+version = meta.version
+group = meta.group
+
+kotlin {
+    jvmToolchain(21)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api(project(":build-logic:api"))
+}
