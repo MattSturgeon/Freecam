@@ -8,6 +8,8 @@ on:
 concurrency:
   group: builds-${{ github.ref }}
 
+permissions: {}
+
 defaults:
   run:
     shell: bash
@@ -16,6 +18,8 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
     outputs:
       version: ${{ steps.version.outputs.result }}
       matrix: ${{ steps.matrix.outputs.result }}
@@ -75,6 +79,8 @@ jobs:
   build:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     needs: prepare
     strategy:
