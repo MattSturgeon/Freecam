@@ -17,6 +17,7 @@ dependencyResolutionManagement {
 
 include(
     "api",
+    "api:plugin",
     "conventions",
     "settings",
 )
