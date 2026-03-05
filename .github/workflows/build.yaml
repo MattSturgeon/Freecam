@@ -240,19 +240,11 @@ jobs:
       - name: Publish release
         env:
           do_release: ${{ needs.prepare.outputs.do_release }}
+          GITHUB_TOKEN: ${{ needs.prepare.outputs.do_release && github.token || 'dummy-token' }}
         run: |
-          args=(
-            # Directory where artifacts were downloaded.
-            artifacts
-          )
-          [ "$do_release" = "true" ] || {
+          args=( artifacts )
+          [ -n "$do_release" ] || {
             echo "::notice::Doing a dry run release"
-            args+=(
-              --dry-run
-            
-              # pull_request events cannot access secrets.
-              # Regardless, define stubs to avoid accidents.
-              --gh-token github_token
-            )
+            args+=( --dry-run )
           }
           publish "${args[@]}"
