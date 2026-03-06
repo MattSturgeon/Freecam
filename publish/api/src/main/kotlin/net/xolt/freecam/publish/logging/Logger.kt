@@ -3,9 +3,7 @@ package net.xolt.freecam.publish.logging
 /**
  * Default logger.
  */
-val logger: Logger = Logger(parent = null, level = LogLevel.NORMAL).apply {
-    decorate { errorsToStderr() }
-}
+val logger: Logger = Logger(parent = null, level = LogLevel.INFO)
 
 class Logger internal constructor(
     private val parent: Logger? = null,
@@ -26,11 +24,12 @@ class Logger internal constructor(
     }
 
     inline fun error(msg: () -> String) = log(LogLevel.ERROR, msg)
-    inline fun info(msg: () -> String) = log(LogLevel.NORMAL, msg)
-    inline fun verbose(msg: () -> String) = log(LogLevel.VERBOSE, msg)
+    inline fun warn(msg: () -> String) = log(LogLevel.WARNING, msg)
+    inline fun info(msg: () -> String) = log(LogLevel.INFO, msg)
     inline fun debug(msg: () -> String) = log(LogLevel.DEBUG, msg)
+    inline fun trace(msg: () -> String) = log(LogLevel.TRACE, msg)
 
-    inline fun log(level: LogLevel, msg: () -> String) {
+    inline fun log(level: LogLevel = LogLevel.INFO, msg: () -> String) {
         if (logs(level)) {
             LogContext(level, msg()).apply {
                 for (decorate in decorators) {
@@ -42,5 +41,5 @@ class Logger internal constructor(
     }
 
     fun logs(level: LogLevel): Boolean =
-        this.level >= level && this.level > LogLevel.QUIET
+        this.level >= level && this.level > LogLevel.NONE
 }

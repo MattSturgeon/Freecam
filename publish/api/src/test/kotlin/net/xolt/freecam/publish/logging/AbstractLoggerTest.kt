@@ -3,7 +3,7 @@ package net.xolt.freecam.publish.logging
 import kotlin.test.BeforeTest
 
 abstract class AbstractLoggerTest(
-    private val level: LogLevel = LogLevel.QUIET,
+    private val level: LogLevel = LogLevel.NONE,
 ) {
 
     lateinit var logger: Logger

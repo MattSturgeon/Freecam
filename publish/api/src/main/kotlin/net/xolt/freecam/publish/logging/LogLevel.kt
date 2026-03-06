@@ -1,11 +1,12 @@
 package net.xolt.freecam.publish.logging
 
 enum class LogLevel {
-    QUIET,
+    NONE,
     ERROR,
-    NORMAL,
-    VERBOSE,
+    WARNING,
+    INFO,
     DEBUG,
+    TRACE,
 }
 
 operator fun LogLevel.plus(increment: Int) = shift(increment)

@@ -10,7 +10,7 @@ internal class VerbosityOptionGroup : OptionGroup() {
 
     private val quiet by option(
         "-q", "--quiet",
-        help = "Suppress output (shorthand for --verbosity=${LogLevel.QUIET})"
+        help = "Suppress output (shorthand for --verbosity=quiet)"
     ).flag()
 
     private val extraVerbosity by option("-v", "--verbose")
@@ -19,11 +19,20 @@ internal class VerbosityOptionGroup : OptionGroup() {
 
     private val verbosity by option("--verbosity")
         .help("Verbosity level")
-        .enum<LogLevel>()
-        .defaultLazy(defaultForHelp = LogLevel.NORMAL.toString()) {
-            if (quiet) LogLevel.QUIET
+        .enum<LogLevel> {
+            when (it) {
+                LogLevel.NONE -> "quiet"
+                LogLevel.ERROR -> "errors"
+                LogLevel.WARNING -> "warnings"
+                LogLevel.INFO -> "normal"
+                LogLevel.DEBUG -> "verbose"
+                LogLevel.TRACE -> "debug"
+            }
+        }
+        .defaultLazy(defaultForHelp = LogLevel.INFO.toString()) {
+            if (quiet) LogLevel.NONE
             else if (ghaDebug) LogLevel.DEBUG
-            else LogLevel.NORMAL
+            else LogLevel.INFO
         }
 
     /**
@@ -33,7 +42,7 @@ internal class VerbosityOptionGroup : OptionGroup() {
     private val ghaDebug by option(hidden = true, envvar = "RUNNER_DEBUG").flag()
 
     val level: LogLevel get() {
-        return if (quiet || verbosity == LogLevel.QUIET) LogLevel.QUIET
+        return if (quiet || verbosity == LogLevel.NONE) LogLevel.NONE
         else verbosity + extraVerbosity
     }
 }

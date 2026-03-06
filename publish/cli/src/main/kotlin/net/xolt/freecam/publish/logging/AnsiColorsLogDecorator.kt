@@ -9,7 +9,8 @@ import com.github.ajalt.mordant.rendering.TextColors
 fun LogContext.ansiColors() {
     message = when (level) {
         LogLevel.ERROR -> TextColors.red(message)
-        LogLevel.DEBUG -> TextColors.gray(message)
+        LogLevel.WARNING -> TextColors.yellow(message)
+        LogLevel.TRACE -> TextColors.gray(message)
         else -> message
     }
 }

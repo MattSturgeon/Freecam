@@ -21,9 +21,10 @@ fun LoggingConfig.useLoggingAdapter(level: LogLevel) {
 }
 
 fun LogLevel.toKtorLogLevel(): KtorLogLevel = when (this) {
-    LogLevel.QUIET,
+    LogLevel.NONE,
     LogLevel.ERROR,
-    LogLevel.NORMAL -> KtorLogLevel.NONE
-    LogLevel.VERBOSE -> KtorLogLevel.INFO
-    LogLevel.DEBUG -> KtorLogLevel.HEADERS
+    LogLevel.WARNING,
+    LogLevel.INFO -> KtorLogLevel.NONE
+    LogLevel.DEBUG -> KtorLogLevel.INFO
+    LogLevel.TRACE -> KtorLogLevel.HEADERS
 }

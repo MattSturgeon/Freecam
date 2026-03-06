@@ -7,10 +7,8 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.help
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.versionOption
+import com.github.ajalt.clikt.parameters.options.*
+import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 import net.xolt.freecam.model.ReleaseMetadata
 import net.xolt.freecam.publish.PublisherFactory
@@ -71,21 +69,23 @@ internal class PublishCliCommand(
     val github: GitHubConfig by GitHubOptionGroup()
 
     private val verbosity by VerbosityOptionGroup()
-    val verbosityLevel: LogLevel get() = verbosity.level
+    val logLevel: LogLevel get() = verbosity.level
 
-    // TODO: use a (hidden?) --interactive or --output-format option
-    private val interactive
-        get() = System.console() != null
-
-    // TODO: use a (hidden?) --gha-annotations flag, or integrate with --output-format
-    private val gha
-        get() = System.getenv("GITHUB_ACTIONS") == "true"
+    val outputFormat by option("--output-format", hidden = true)
+        .enum<OutputFormat> { it.toString().lowercase() }
+        .defaultLazy(defaultForHelp = "automatic") {
+            if (System.getenv("GITHUB_ACTIONS") == "true") OutputFormat.GHA
+            // TODO: smarter ANSI support detection
+            else if (System.console() != null) OutputFormat.ANSI
+            else OutputFormat.PLAIN
+        }
 
     override suspend fun run() {
-        logger.apply {
-            level = verbosityLevel
-            if (gha) decorate { githubAnnotations() }
-            if (interactive) decorate { ansiColors() }
+        logger.level = logLevel
+        when (outputFormat) {
+            OutputFormat.ANSI -> logger.decorate { ansiColors() }
+            OutputFormat.GHA -> logger.decorate { githubAnnotations() }
+            OutputFormat.PLAIN -> { /* no-op */ }
         }
 
         publisher.use { it.publish(metadata) }

@@ -6,8 +6,10 @@ package net.xolt.freecam.publish.logging
 fun LogContext.githubAnnotations() {
     message = when (level) {
         LogLevel.ERROR -> "::error::$message"
-        LogLevel.DEBUG -> "::debug::$message"
-        // TODO: ::notice::, ::warning:: ?
+        LogLevel.WARNING -> "::warning::$message"
+        LogLevel.DEBUG,
+        LogLevel.TRACE -> "::debug::$message"
+        // TODO: ::notice:: maybe for INFO ?
         else -> message
     }
 }

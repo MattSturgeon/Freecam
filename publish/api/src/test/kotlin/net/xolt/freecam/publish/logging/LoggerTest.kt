@@ -22,8 +22,8 @@ class LoggerTest : AbstractLoggerTest() {
     }
 
     @Test
-    fun `info logs when level is NORMAL`() {
-        logger.level = LogLevel.NORMAL
+    fun `info logs when level is INFO`() {
+        logger.level = LogLevel.INFO
 
         logger.info { "hello" }
 
@@ -31,8 +31,8 @@ class LoggerTest : AbstractLoggerTest() {
     }
 
     @Test
-    fun `debug does not log when level is NORMAL`() {
-        logger.level = LogLevel.NORMAL
+    fun `debug does not log when level is INFO`() {
+        logger.level = LogLevel.INFO
 
         logger.debug { "debug message" }
 
@@ -40,8 +40,8 @@ class LoggerTest : AbstractLoggerTest() {
     }
 
     @Test
-    fun `debug logs when level is DEBUG`() {
-        logger.level = LogLevel.DEBUG
+    fun `debug logs when level is TRACE`() {
+        logger.level = LogLevel.TRACE
 
         logger.debug { "debug message" }
 
@@ -49,8 +49,8 @@ class LoggerTest : AbstractLoggerTest() {
     }
 
     @Test
-    fun `quiet disables all logging`() {
-        logger.level = LogLevel.QUIET
+    fun `NONE disables all logging`() {
+        logger.level = LogLevel.NONE
 
         logger.error { "error" }
         logger.info { "info" }
@@ -61,7 +61,7 @@ class LoggerTest : AbstractLoggerTest() {
 
     @Test
     fun `decorators run in FILO order`() {
-        logger.level = LogLevel.NORMAL
+        logger.level = LogLevel.INFO
 
         logger.decorate { message = "A$message" }
         logger.decorate { message = "B$message" }

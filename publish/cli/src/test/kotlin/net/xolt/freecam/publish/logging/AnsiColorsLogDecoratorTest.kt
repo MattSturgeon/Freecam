@@ -18,8 +18,8 @@ class AnsiColorsLogDecoratorTest {
     }
 
     @Test
-    fun `debug message is coloured`() {
-        val ctx = LogContext(LogLevel.DEBUG, "debug")
+    fun `trace message is coloured`() {
+        val ctx = LogContext(LogLevel.TRACE, "debug")
 
         ctx.ansiColors()
 
@@ -28,8 +28,8 @@ class AnsiColorsLogDecoratorTest {
     }
 
     @Test
-    fun `normal message unchanged`() {
-        val ctx = LogContext(LogLevel.NORMAL, "hello")
+    fun `info message unchanged`() {
+        val ctx = LogContext(LogLevel.INFO, "hello")
 
         ctx.ansiColors()
 

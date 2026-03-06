@@ -6,42 +6,42 @@ import kotlin.test.Test
 
 class LogLevelTest {
     @Test
-    fun `QUIET is less than ERROR`() {
-        LogLevel.QUIET shouldBeLessThan LogLevel.ERROR
+    fun `NONE is less than ERROR`() {
+        LogLevel.NONE shouldBeLessThan LogLevel.ERROR
     }
 
     @Test
-    fun `ERROR is less than NORMAL`() {
-        LogLevel.ERROR shouldBeLessThan LogLevel.NORMAL
+    fun `ERROR is less than INFO`() {
+        LogLevel.ERROR shouldBeLessThan LogLevel.INFO
     }
 
     @Test
-    fun `NORMAL is less than VERBOSE`() {
-        LogLevel.NORMAL shouldBeLessThan LogLevel.VERBOSE
+    fun `INFO is less than DEBUG`() {
+        LogLevel.INFO shouldBeLessThan LogLevel.DEBUG
     }
 
     @Test
-    fun `VERBOSE is less than DEBUG`() {
-        LogLevel.VERBOSE shouldBeLessThan  LogLevel.DEBUG
+    fun `DEBUG is less than TRACE`() {
+        LogLevel.DEBUG shouldBeLessThan  LogLevel.TRACE
     }
 
     @Test
     fun `plus increments level`() {
-        (LogLevel.ERROR + 1) shouldBe LogLevel.NORMAL
+        (LogLevel.ERROR + 1) shouldBe LogLevel.WARNING
     }
 
     @Test
     fun `minus decrements level`() {
-        (LogLevel.VERBOSE - 1) shouldBe LogLevel.NORMAL
+        (LogLevel.DEBUG - 1) shouldBe LogLevel.INFO
     }
 
     @Test
     fun `plus clamps to max`() {
-        (LogLevel.DEBUG + 5) shouldBe LogLevel.DEBUG
+        (LogLevel.TRACE + 5) shouldBe LogLevel.TRACE
     }
 
     @Test
     fun `minus clamps to min`() {
-        (LogLevel.QUIET - 10) shouldBe LogLevel.QUIET
+        (LogLevel.NONE - 10) shouldBe LogLevel.NONE
     }
 }

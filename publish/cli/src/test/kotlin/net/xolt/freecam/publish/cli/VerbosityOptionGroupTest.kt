@@ -14,14 +14,14 @@ class VerbosityOptionGroupTest {
     @Test
     fun `get expected verbosity from various args`() {
         listOf(
-            TestFixture("NORMAL is default", LogLevel.NORMAL),
-            TestFixture("--quiet is QUIET", LogLevel.QUIET, "--quiet"),
-            TestFixture("--verbosity=quiet is QUIET", LogLevel.QUIET, "--verbosity=quiet"),
-            TestFixture("QUIET is not incremented", LogLevel.QUIET, "--verbosity=quiet", "-vvv"),
-            TestFixture("--quiet overrides --verbosity", LogLevel.QUIET, "--quiet", "--verbosity=ERROR"),
-            TestFixture("NORMAL is incremented", LogLevel.NORMAL + 3, "--verbosity=NORMAL", "-vvv"),
-            TestFixture("ERROR is incremented", LogLevel.ERROR + 3, "--verbosity=ERROR", "-vv", "--verbose"),
-            TestFixture("Extra increments are ignored", LogLevel.entries.last(), "--verbosity=DEBUG", "-vvvvvv"),
+            TestFixture("INFO is default", LogLevel.INFO),
+            TestFixture("--quiet is NONE", LogLevel.NONE, "--quiet"),
+            TestFixture("--verbosity=quiet is NONE", LogLevel.NONE, "--verbosity=quiet"),
+            TestFixture("NONE is not incremented", LogLevel.NONE, "--verbosity=quiet", "-vvv"),
+            TestFixture("--quiet overrides --verbosity", LogLevel.NONE, "--quiet", "--verbosity=errors"),
+            TestFixture("INFO is incremented", LogLevel.INFO + 3, "--verbosity=normal", "-vvv"),
+            TestFixture("ERROR is incremented", LogLevel.ERROR + 3, "--verbosity=errors", "-vv", "--verbose"),
+            TestFixture("Extra increments are ignored", LogLevel.entries.last(), "--verbosity=debug", "-vvvvvv"),
         ).assertSoftly {
             val cmd = TestCommand()
             val result = cmd.test(*args)

@@ -13,7 +13,7 @@ import net.xolt.freecam.publish.logging.useLoggingAdapter
 
 internal fun HttpClientConfig<*>.configureGitHubClient(
     token: String,
-    logLevel: LogLevel = LogLevel.VERBOSE,
+    logLevel: LogLevel = LogLevel.DEBUG,
     retryExceptions: Int = 4,
     retryHttpErrors: Int = 4,
 ) {

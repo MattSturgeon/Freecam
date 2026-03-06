@@ -25,7 +25,7 @@ class GithubAnnotationsLogDecoratorTest {
 
     @Test
     fun `normal message unchanged`() {
-        val ctx = LogContext(LogLevel.NORMAL, "hello")
+        val ctx = LogContext(LogLevel.INFO, "hello")
 
         ctx.githubAnnotations()
 
