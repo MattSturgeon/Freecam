@@ -14,6 +14,8 @@ import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.parameters.types.path
 import net.xolt.freecam.model.ReleaseMetadata
 import net.xolt.freecam.publish.PublisherFactory
+import net.xolt.freecam.publish.logger.LogLevel
+import net.xolt.freecam.publish.logger.Logger
 import net.xolt.freecam.publish.model.GitHubConfig
 import java.nio.file.Path
 import kotlin.io.path.absolute
@@ -66,7 +68,11 @@ internal class PublishCliCommand(
 
     val github: GitHubConfig by GitHubOptionGroup()
 
+    private val verbosity by VerbosityOptionGroup()
+    val verbosityLevel: LogLevel get() = verbosity.level
+
     override suspend fun run() {
+        Logger.level = verbosityLevel
         publisher.use { it.publish(metadata) }
     }
 }

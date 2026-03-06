@@ -16,4 +16,10 @@ repositories {
 
 dependencies {
     api(project(":build-logic:api"))
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotest.assertions)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

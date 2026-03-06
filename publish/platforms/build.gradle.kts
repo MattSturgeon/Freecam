@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.ktor.client.contentnegotiation)
     implementation(libs.ktor.client.graphql)
     implementation(libs.ktor.serialization.json)
+    implementation("io.ktor:ktor-client-logging:3.4.0")
     testImplementation(libs.kotlin.test)
     testImplementation(testFixtures(project(":publish:api")))
     testImplementation(libs.kotest.assertions)
