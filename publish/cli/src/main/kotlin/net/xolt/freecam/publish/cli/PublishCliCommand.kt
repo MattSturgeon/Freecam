@@ -71,8 +71,21 @@ internal class PublishCliCommand(
     private val verbosity by VerbosityOptionGroup()
     val verbosityLevel: LogLevel get() = verbosity.level
 
+    // TODO: use a (hidden?) --interactive or --output-format option
+    private val interactive
+        get() = System.console() != null
+
+    // TODO: use a (hidden?) --gha-annotations flag, or integrate with --output-format
+    private val gha
+        get() = System.getenv("GITHUB_ACTIONS") == "true"
+
     override suspend fun run() {
-        Logger.level = verbosityLevel
+        Logger.apply {
+            level = verbosityLevel
+            if (interactive) decorate { ansiColours() }
+            if (gha) decorate { githubAnnotations() }
+        }
+
         publisher.use { it.publish(metadata) }
     }
 }
