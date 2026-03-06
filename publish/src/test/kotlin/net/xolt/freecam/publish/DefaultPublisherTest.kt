@@ -20,7 +20,7 @@ import kotlin.io.path.createFile
 import kotlin.io.path.pathString
 import kotlin.test.Test
 
-class PublisherTest {
+class DefaultPublisherTest {
 
     private val testVersions = listOf(
         testProjectReleaseMetadata(filename = "a"),

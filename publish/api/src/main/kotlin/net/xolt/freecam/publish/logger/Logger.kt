@@ -6,7 +6,7 @@ object Logger {
     var level: LogLevel = LogLevel.NORMAL
 
     var decorators: List<LogContext.() -> Unit> = listOf(LogContext::errorsToStderr)
-        private set
+        internal set
 
     fun decorate(decorator: LogContext.() -> Unit) {
         decorators += decorator
@@ -20,8 +20,8 @@ object Logger {
     inline fun log(level: LogLevel, msg: () -> String) {
         if (logs(level)) {
             LogContext(level, msg()).apply {
-                for (decorator in decorators) {
-                    decorator()
+                for (decorate in decorators.asReversed()) {
+                    decorate()
                 }
                 handler(message)
             }
@@ -32,6 +32,6 @@ object Logger {
         this.level >= level && this.level > LogLevel.QUIET
 }
 
-private fun LogContext.errorsToStderr() {
+internal fun LogContext.errorsToStderr() {
     if (level <= LogLevel.ERROR) handler = System.err::println
 }

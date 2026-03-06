@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.enum
 import net.xolt.freecam.publish.logger.LogLevel
+import net.xolt.freecam.publish.logger.plus
 
 internal class VerbosityOptionGroup : OptionGroup() {
 
@@ -32,11 +33,7 @@ internal class VerbosityOptionGroup : OptionGroup() {
     private val ghaDebug by option(hidden = true, envvar = "RUNNER_DEBUG").flag()
 
     val level: LogLevel get() {
-        if (verbosity == LogLevel.QUIET) return verbosity
-
-        return verbosity.ordinal
-            .plus(extraVerbosity)
-            .coerceAtMost(LogLevel.entries.lastIndex)
-            .let { LogLevel.entries[it] }
+        return if (quiet || verbosity == LogLevel.QUIET) LogLevel.QUIET
+        else verbosity + extraVerbosity
     }
 }

@@ -172,53 +172,53 @@ class GitHubOptionGroupTest {
             result.stderr shouldContain expectedError
         }
     }
-}
 
-private class TestCommand : CliktCommand() {
-    val github by GitHubOptionGroup()
-    override fun run() = Unit
-}
+    private class TestCommand : CliktCommand() {
+        val github by GitHubOptionGroup()
+        override fun run() = Unit
+    }
 
-private sealed interface GitHubTestFixture {
-    val clue: String
-    val args: List<String>
-    val env: Map<String, String>
-}
+    private sealed interface GitHubTestFixture {
+        val clue: String
+        val args: List<String>
+        val env: Map<String, String>
+    }
 
-private data class ValidOptionFixture(
-    override val clue: String,
-    override val env: Map<String, String>,
-    override val args: List<String>,
-    val expectedOwner: String,
-    val expectedRepo: String,
-    val expectedToken: String = "token",
-    val expectedSha: String = "deadbeef",
-) : GitHubTestFixture
+    private data class ValidOptionFixture(
+        override val clue: String,
+        override val env: Map<String, String>,
+        override val args: List<String>,
+        val expectedOwner: String,
+        val expectedRepo: String,
+        val expectedToken: String = "token",
+        val expectedSha: String = "deadbeef",
+    ) : GitHubTestFixture
 
-private data class RepoOwnerFixture(
-    override val clue: String,
-    override val env: Map<String, String>,
-    override val args: List<String>,
-    val expectedOwner: String,
-    val expectedRepo: String,
-    val expectedError: String? = null,
-) : GitHubTestFixture
+    private data class RepoOwnerFixture(
+        override val clue: String,
+        override val env: Map<String, String>,
+        override val args: List<String>,
+        val expectedOwner: String,
+        val expectedRepo: String,
+        val expectedError: String? = null,
+    ) : GitHubTestFixture
 
-private data class InvalidOptionFixture(
-    override val clue: String,
-    override val env: Map<String, String>,
-    override val args: List<String>,
-    val expectedError: String
-) : GitHubTestFixture
+    private data class InvalidOptionFixture(
+        override val clue: String,
+        override val env: Map<String, String>,
+        override val args: List<String>,
+        val expectedError: String
+    ) : GitHubTestFixture
 
-private fun <T : GitHubTestFixture> Iterable<T>.testEach(
-    block: T.(cmd: TestCommand, result: CliktCommandTestResult) -> Unit,
-) = assertSoftly {
-    forEach {
-        withClue(it.clue) {
-            val cmd = TestCommand()
-            val result = cmd.test(it.args, envvars = it.env)
-            it.block(cmd, result)
+    private fun <T : GitHubTestFixture> Iterable<T>.testEach(
+        block: T.(cmd: TestCommand, result: CliktCommandTestResult) -> Unit,
+    ) = assertSoftly {
+        forEach {
+            withClue(it.clue) {
+                val cmd = TestCommand()
+                val result = cmd.test(it.args, envvars = it.env)
+                it.block(cmd, result)
+            }
         }
     }
 }

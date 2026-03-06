@@ -16,6 +16,8 @@ import net.xolt.freecam.model.ReleaseMetadata
 import net.xolt.freecam.publish.PublisherFactory
 import net.xolt.freecam.publish.logger.LogLevel
 import net.xolt.freecam.publish.logger.Logger
+import net.xolt.freecam.publish.logger.ansiColors
+import net.xolt.freecam.publish.logger.githubAnnotations
 import net.xolt.freecam.publish.model.GitHubConfig
 import java.nio.file.Path
 import kotlin.io.path.absolute
@@ -82,8 +84,8 @@ internal class PublishCliCommand(
     override suspend fun run() {
         Logger.apply {
             level = verbosityLevel
-            if (interactive) decorate { ansiColours() }
             if (gha) decorate { githubAnnotations() }
+            if (interactive) decorate { ansiColors() }
         }
 
         publisher.use { it.publish(metadata) }
