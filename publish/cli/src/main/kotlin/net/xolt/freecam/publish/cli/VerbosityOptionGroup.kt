@@ -3,8 +3,8 @@ package net.xolt.freecam.publish.cli
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.enum
-import net.xolt.freecam.publish.logger.LogLevel
-import net.xolt.freecam.publish.logger.plus
+import net.xolt.freecam.publish.logging.LogLevel
+import net.xolt.freecam.publish.logging.plus
 
 internal class VerbosityOptionGroup : OptionGroup() {
 

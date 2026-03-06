@@ -1,4 +1,4 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
 class LogContext(
     val level: LogLevel,

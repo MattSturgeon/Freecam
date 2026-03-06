@@ -1,15 +1,28 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
-object Logger {
+/**
+ * Default logger.
+ */
+val logger: Logger = Logger(parent = null, level = LogLevel.NORMAL).apply {
+    decorate { errorsToStderr() }
+}
+
+class Logger internal constructor(
+    private val parent: Logger? = null,
 
     @Volatile
-    var level: LogLevel = LogLevel.NORMAL
+    var level: LogLevel = parent!!.level,
+) {
+    private val decoratorStore = mutableListOf<LogContext.() -> Unit>()
 
-    var decorators: List<LogContext.() -> Unit> = listOf(LogContext::errorsToStderr)
-        internal set
+    val decorators: Iterable<LogContext.() -> Unit>
+        get() = sequenceOf(
+            parent?.decorators,
+            decoratorStore.asReversed(),
+        ).filterNotNull().flatten().asIterable()
 
     fun decorate(decorator: LogContext.() -> Unit) {
-        decorators += decorator
+        decoratorStore += decorator
     }
 
     inline fun error(msg: () -> String) = log(LogLevel.ERROR, msg)
@@ -20,7 +33,7 @@ object Logger {
     inline fun log(level: LogLevel, msg: () -> String) {
         if (logs(level)) {
             LogContext(level, msg()).apply {
-                for (decorate in decorators.asReversed()) {
+                for (decorate in decorators) {
                     decorate()
                 }
                 handler(message)
@@ -30,8 +43,4 @@ object Logger {
 
     fun logs(level: LogLevel): Boolean =
         this.level >= level && this.level > LogLevel.QUIET
-}
-
-internal fun LogContext.errorsToStderr() {
-    if (level <= LogLevel.ERROR) handler = System.err::println
 }

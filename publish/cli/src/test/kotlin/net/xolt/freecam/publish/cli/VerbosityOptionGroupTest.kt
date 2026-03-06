@@ -5,8 +5,8 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.testing.test
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
-import net.xolt.freecam.publish.logger.LogLevel
-import net.xolt.freecam.publish.logger.plus
+import net.xolt.freecam.publish.logging.LogLevel
+import net.xolt.freecam.publish.logging.plus
 import kotlin.test.Test
 
 class VerbosityOptionGroupTest {

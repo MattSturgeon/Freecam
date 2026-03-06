@@ -1,4 +1,4 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
 /**
  * Annotate log messages with [GitHub Actions annotations](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands).

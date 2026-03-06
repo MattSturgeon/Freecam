@@ -1,9 +1,9 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
-class ErrorsToStderrDecoratorTest {
+class ErrorsToStderrLogDecoratorTest {
 
     @Test
     fun `error level switches handler to stderr`() {

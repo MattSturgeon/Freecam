@@ -8,10 +8,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
-import net.xolt.freecam.publish.logger.LogLevel
-import net.xolt.freecam.publish.logger.Logger
-import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
-import io.ktor.client.plugins.logging.Logger as KtorLogger
+import net.xolt.freecam.publish.logging.LogLevel
+import net.xolt.freecam.publish.logging.useLoggingAdapter
 
 internal fun HttpClientConfig<*>.configureGitHubClient(
     token: String,
@@ -24,19 +22,7 @@ internal fun HttpClientConfig<*>.configureGitHubClient(
         accept(ContentType.Application.GitHubJson)
     }
     install(Logging) {
-        logger = object : KtorLogger {
-            override fun log(message: String) =
-                Logger.log(logLevel) { message }
-        }
-        level = Logger.level.let {
-            // Avoid ktor logging if our logger will ignore
-            if (!Logger.logs(logLevel)) KtorLogLevel.NONE
-            // VERBOSE → INFO
-            else if (it == LogLevel.VERBOSE) KtorLogLevel.INFO
-            // DEBUG+ → HEADERS
-            else if (it > LogLevel.VERBOSE) KtorLogLevel.HEADERS
-            else KtorLogLevel.NONE
-        }
+        useLoggingAdapter(logLevel)
     }
     install(ContentNegotiation) {
         json(Json {

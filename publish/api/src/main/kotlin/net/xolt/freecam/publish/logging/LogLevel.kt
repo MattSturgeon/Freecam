@@ -1,4 +1,4 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
 enum class LogLevel {
     QUIET,

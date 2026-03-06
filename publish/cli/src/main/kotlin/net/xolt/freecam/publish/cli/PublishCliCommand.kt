@@ -14,10 +14,10 @@ import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.parameters.types.path
 import net.xolt.freecam.model.ReleaseMetadata
 import net.xolt.freecam.publish.PublisherFactory
-import net.xolt.freecam.publish.logger.LogLevel
-import net.xolt.freecam.publish.logger.Logger
-import net.xolt.freecam.publish.logger.ansiColors
-import net.xolt.freecam.publish.logger.githubAnnotations
+import net.xolt.freecam.publish.logging.LogLevel
+import net.xolt.freecam.publish.logging.ansiColors
+import net.xolt.freecam.publish.logging.githubAnnotations
+import net.xolt.freecam.publish.logging.logger
 import net.xolt.freecam.publish.model.GitHubConfig
 import java.nio.file.Path
 import kotlin.io.path.absolute
@@ -82,7 +82,7 @@ internal class PublishCliCommand(
         get() = System.getenv("GITHUB_ACTIONS") == "true"
 
     override suspend fun run() {
-        Logger.apply {
+        logger.apply {
             level = verbosityLevel
             if (gha) decorate { githubAnnotations() }
             if (interactive) decorate { ansiColors() }

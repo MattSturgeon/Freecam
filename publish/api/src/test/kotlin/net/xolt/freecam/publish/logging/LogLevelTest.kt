@@ -1,4 +1,4 @@
-package net.xolt.freecam.publish.logger
+package net.xolt.freecam.publish.logging
 
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
