@@ -23,4 +23,6 @@ include(
     "settings",
 )
 
+project(":api:plugin").projectDir = file("api-plugin")
+
 rootProject.name = "build-logic"
