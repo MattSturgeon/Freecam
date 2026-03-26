@@ -1,4 +1,4 @@
-package net.xolt.freecam.clothconfig;
+package net.xolt.freecam.clothconfig.model;
 
 import net.minecraft.world.level.block.*;
 //~ if >= 1.19 '.Registry' -> '.registries.BuiltInRegistries'
@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 class CollisionBehavior {
 
-    private AutoConfigModConfig.CollisionConfig config;
+    private ModConfigModel.CollisionConfig config;
 
     private static final Predicate<Block> transparent = Builder.builder()
             //~ if >=1.20.6 'AbstractGlassBlock' -> 'TransparentBlock'
@@ -29,7 +29,7 @@ class CollisionBehavior {
 
     private Predicate<Block> custom = block -> false;
 
-    CollisionBehavior(AutoConfigModConfig.CollisionConfig config) {
+    CollisionBehavior(ModConfigModel.CollisionConfig config) {
         rebuild(config);
     }
 
@@ -54,7 +54,7 @@ class CollisionBehavior {
         return false;
     }
 
-    void rebuild(AutoConfigModConfig.CollisionConfig config) {
+    void rebuild(ModConfigModel.CollisionConfig config) {
         String[] ids = config.whitelist.ids.stream()
                 .map(id -> id.contains(":") ? id : "minecraft:" + id)
                 .toArray(String[]::new);

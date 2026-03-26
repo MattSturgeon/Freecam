@@ -1,38 +1,54 @@
-package net.xolt.freecam.clothconfig;
+package net.xolt.freecam.clothconfig.model;
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.ConfigHolder;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.Block;
-import net.xolt.freecam.clothconfig.gui.*;
-import net.xolt.freecam.config.FlightMode;
+import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.MCAwareModConfig;
-import net.xolt.freecam.config.Perspective;
+import net.xolt.freecam.config.model.ConfigLoader;
+import net.xolt.freecam.config.model.FlightMode;
+import net.xolt.freecam.config.model.Perspective;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Config(name = "freecam")
-public class AutoConfigModConfig implements ConfigData, MCAwareModConfig {
+public class ModConfigModel implements MCAwareModConfig {
 
-    @ConfigEntry.Gui.Excluded
-    static AutoConfigModConfig INSTANCE;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModConfigModel.class);
 
-    public static void init() {
-        ConfigHolder<AutoConfigModConfig> holder = AutoConfig.register(AutoConfigModConfig.class, JanksonConfigSerializer::new);
-        AutoConfigExtensions.apply(AutoConfigModConfig.class);
-        INSTANCE = holder.getConfig();
-        holder.registerSaveListener(INSTANCE::onConfigChange);
-        holder.registerLoadListener(INSTANCE::onConfigChange);
+    public static ModConfigModel INSTANCE;
+
+    public static ModConfigModel DEFAULTS = new ModConfigModel();
+
+    private static final ConfigLoader<ModConfigModel> SERIALIZER = new JanksonConfigLoader<>(ModConfigModel.class, Freecam.MOD_ID);
+
+    public static void load() {
+        try {
+            INSTANCE = SERIALIZER.read();
+        } catch (Exception e) {
+            LOGGER.error("Failed to load config, using defaults", e);
+            INSTANCE = new ModConfigModel();
+        }
     }
 
-    public InteractionResult onConfigChange(ConfigHolder<AutoConfigModConfig> holder, AutoConfigModConfig config) {
-        collision.behavior.rebuild(config.collision);
-        return InteractionResult.PASS;
+    public void save() {
+        try {
+            SERIALIZER.write(this);
+
+            // Invoke "on save" listeners
+            // TODO: consider having a Collection<Runnable> to store handlers
+            onConfigChange();
+        } catch (Exception e) {
+            LOGGER.error("Failed to save config, resetting to defaults", e);
+            // TODO: Consider propagating an error to the GUI
+        }
+    }
+
+    public void onConfigChange() {
+        // TODO: separate behavior from model
+        // also separate saving/loading into a controller
+        // have the controller store a list of "change subscribers", allowing collision behavior to be composable
+        collision.behavior.rebuild(collision);
     }
 
     @Override
@@ -150,109 +166,55 @@ public class AutoConfigModConfig implements ConfigData, MCAwareModConfig {
         return notification.notifyTripod;
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public ControlsConfig controls = new ControlsConfig();
     public static class ControlsConfig {
-        @ModBindingsConfig
         private transient Object keys;
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public MovementConfig movement = new MovementConfig();
     public static class MovementConfig {
-        @TranslatableEnumButton
-        @ConfigEntry.Gui.Tooltip
         public FlightMode flightMode = FlightMode.DEFAULT;
-
-        @ConfigEntry.Gui.Tooltip
-        @BoundedContinuous(max = 10)
         public double horizontalSpeed = 1.0;
-
-        @ConfigEntry.Gui.Tooltip
-        @BoundedContinuous(max = 10)
         public double verticalSpeed = 1.0;
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public CollisionConfig collision = new CollisionConfig();
     public static class CollisionConfig {
-        @ConfigEntry.Gui.Tooltip
         public boolean ignoreTransparent = false;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean ignoreOpenable = false;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean ignoreCustom = false;
 
-        @ConfigEntry.Gui.TransitiveObject
         public CollisionWhitelist whitelist = new CollisionWhitelist();
         public static class CollisionWhitelist {
-            @ConfigEntry.Gui.Tooltip(count = 2)
             public List<String> ids = new ArrayList<>();
-            @ValidateRegex
-            @ConfigEntry.Gui.Tooltip(count = 2)
             public List<String> patterns = new ArrayList<>();
         }
 
-        @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean ignoreAll = true;
-
-        @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean alwaysCheck = false;
 
-        @ConfigEntry.Gui.Excluded
         private final transient CollisionBehavior behavior = new CollisionBehavior(this);
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public VisualConfig visual = new VisualConfig();
     public static class VisualConfig {
-        @TranslatableEnumButton
-        @ConfigEntry.Gui.Tooltip
         public Perspective perspective = Perspective.INSIDE;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean showPlayer = true;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean showHand = false;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean fullBright = false;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean showSubmersion = false;
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public UtilityConfig utility = new UtilityConfig();
     public static class UtilityConfig {
-        @ConfigEntry.Gui.Tooltip
         public boolean disableOnDamage = true;
-
-        @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean freezePlayer = false;
-
-        @ConfigEntry.Gui.Tooltip(count = 2)
         public boolean allowInteract = false;
-
-        @TranslatableEnumButton
-        @ConfigEntry.Gui.Tooltip
         public InteractionMode interactionMode = InteractionMode.CAMERA;
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public ServerConfig servers = new ServerConfig();
     public static class ServerConfig {
-        @TranslatableEnumButton
-        @ConfigEntry.Gui.Tooltip(count = 2)
         public ServerRestriction mode = ServerRestriction.NONE;
 
         // These must be mutable lists, so no Collections.emptyList()
@@ -260,14 +222,9 @@ public class AutoConfigModConfig implements ConfigData, MCAwareModConfig {
         public List<String> blacklist = new ArrayList<>();
     }
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.CollapsibleObject
     public NotificationConfig notification = new NotificationConfig();
     public static class NotificationConfig {
-        @ConfigEntry.Gui.Tooltip
         public boolean notifyFreecam = true;
-
-        @ConfigEntry.Gui.Tooltip
         public boolean notifyTripod = true;
     }
 
