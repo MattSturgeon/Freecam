@@ -14,34 +14,8 @@ import java.util.List;
 
 public class ModConfigModel implements MCAwareModConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModConfigModel.class);
-
-    public static ModConfigModel INSTANCE;
-
-    public static ModConfigModel DEFAULTS = new ModConfigModel();
-
-    private static final ConfigLoader<ModConfigModel> SERIALIZER = new JanksonConfigLoader<>(ModConfigModel.class, Freecam.MOD_ID);
-
-    public static void load() {
-        try {
-            INSTANCE = SERIALIZER.read();
-        } catch (Exception e) {
-            LOGGER.error("Failed to load config, using defaults", e);
-            INSTANCE = new ModConfigModel();
-        }
-    }
-
-    public void save() {
-        try {
-            SERIALIZER.write(this);
-
-            // Invoke "on save" listeners
-            // TODO: consider having a Collection<Runnable> to store handlers
-            onConfigChange();
-        } catch (Exception e) {
-            LOGGER.error("Failed to save config, resetting to defaults", e);
-            // TODO: Consider propagating an error to the GUI
-        }
+    public ModConfigModel() {
+        onConfigChange();
     }
 
     public void onConfigChange() {
