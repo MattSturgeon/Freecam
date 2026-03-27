@@ -1,144 +1,12 @@
 package net.xolt.freecam.clothconfig.model;
 
-import net.minecraft.world.level.block.Block;
-import net.xolt.freecam.Freecam;
-import net.xolt.freecam.config.MCAwareModConfig;
-import net.xolt.freecam.config.model.ConfigLoader;
 import net.xolt.freecam.config.model.FlightMode;
 import net.xolt.freecam.config.model.Perspective;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModConfigModel implements MCAwareModConfig {
-
-    public ModConfigModel() {
-        onConfigChange();
-    }
-
-    public void onConfigChange() {
-        // TODO: separate behavior from model
-        // also separate saving/loading into a controller
-        // have the controller store a list of "change subscribers", allowing collision behavior to be composable
-        collision.behavior.rebuild(collision);
-    }
-
-    @Override
-    public FlightMode getFlightMode() {
-        return movement.flightMode;
-    }
-
-    @Override
-    public double getHorizontalSpeed() {
-        return movement.horizontalSpeed;
-    }
-
-    @Override
-    public double getVerticalSpeed() {
-        return movement.verticalSpeed;
-    }
-
-    @Override
-    public boolean ignoreAllCollision() {
-        return collision.ignoreAll;
-    }
-
-    @Override
-    public boolean shouldCheckInitialCollision() {
-        return collision.alwaysCheck || !collision.ignoreAll;
-    }
-
-    @Override
-    public boolean ignoreCollisionWith(Block block) {
-        return collision.ignoreAll || collision.behavior.isIgnored(block);
-    }
-
-    @Override
-    public Perspective getInitialPerspective() {
-        return visual.perspective;
-    }
-
-    @Override
-    public boolean shouldShowPlayer() {
-        return visual.showPlayer;
-    }
-
-    @Override
-    public boolean shouldShowHand() {
-        return visual.showHand;
-    }
-
-    @Override
-    public boolean isFullBrightEnabled() {
-        return visual.fullBright;
-    }
-
-    @Override
-    public boolean shouldShowSubmersionFog() {
-        return visual.showSubmersion;
-    }
-
-    @Override
-    public boolean shouldDisableOnDamage() {
-        return utility.disableOnDamage;
-    }
-
-    @Override
-    public boolean shouldFreezePlayer() {
-        return utility.freezePlayer;
-    }
-
-    @Override
-    public boolean shouldPreventInteractions() {
-        return !utility.allowInteract;
-    }
-
-    public boolean allowInteractionsFrom(InteractionMode mode) {
-        return utility.allowInteract && utility.interactionMode == mode;
-    }
-
-    @Override
-    public boolean allowInteractionsFromCamera() {
-        return allowInteractionsFrom(InteractionMode.CAMERA);
-    }
-
-    @Override
-    public boolean allowInteractionsFromPlayer() {
-        return allowInteractionsFrom(InteractionMode.PLAYER);
-    }
-
-    @Override
-    public boolean isRestrictedOnServer(String serverIp) {
-        return switch (servers.mode) {
-            case NONE -> false;
-            case WHITELIST -> {
-                String ip = serverIp.trim().toLowerCase();
-                yield servers.whitelist.stream()
-                        .map(String::trim)
-                        .map(String::toLowerCase)
-                        .noneMatch(ip::equals);
-            }
-            case BLACKLIST -> {
-                String ip = serverIp.trim().toLowerCase();
-                yield servers.blacklist.stream()
-                        .map(String::trim)
-                        .map(String::toLowerCase)
-                        .anyMatch(ip::equals);
-            }
-        };
-    }
-
-    @Override
-    public boolean shouldNotifyFreecam() {
-        return notification.notifyFreecam;
-    }
-
-    @Override
-    public boolean shouldNotifyTripod() {
-        return notification.notifyTripod;
-    }
+public class ModConfigModel {
 
     public ControlsConfig controls = new ControlsConfig();
     public static class ControlsConfig {
@@ -166,8 +34,6 @@ public class ModConfigModel implements MCAwareModConfig {
 
         public boolean ignoreAll = true;
         public boolean alwaysCheck = false;
-
-        private final transient CollisionBehavior behavior = new CollisionBehavior(this);
     }
 
     public VisualConfig visual = new VisualConfig();

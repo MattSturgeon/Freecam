@@ -2,68 +2,57 @@ package net.xolt.freecam.clothconfig;
 
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.clothconfig.model.JanksonConfigLoader;
+import net.xolt.freecam.clothconfig.model.ModConfigAdapter;
 import net.xolt.freecam.clothconfig.model.ModConfigModel;
 import net.xolt.freecam.config.model.ConfigController;
 import net.xolt.freecam.config.model.ConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
-class SingletonModConfigController implements ConfigController<ModConfigModel> {
+class SingletonModConfigController implements ConfigController<ModConfigAdapter> {
 
     public static final SingletonModConfigController INSTANCE = new SingletonModConfigController();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SingletonModConfigController.class);
 
     private final ConfigLoader<ModConfigModel> serializer = new JanksonConfigLoader<>(ModConfigModel.class, Freecam.MOD_ID);
-    private final List<Consumer<ModConfigModel>> subscribers = new ArrayList<>();
-    private final ModConfigModel defaults = new ModConfigModel();
-    private ModConfigModel config;
+    private final ModConfigAdapter defaults = new ModConfigAdapter(new ModConfigModel());
+    private ModConfigAdapter config = new ModConfigAdapter(new ModConfigModel());
 
-    private SingletonModConfigController() {
-        // TODO: split behavior from model
-        onSave(ModConfigModel::onConfigChange);
+    private SingletonModConfigController() {}
+
+    @Override
+    public ModConfigAdapter getConfig() {
+        return config;
     }
 
     @Override
-    public ModConfigModel getConfig() {
-        // Use defaults if config has not been loaded
-        return config == null ? defaults : config;
-    }
-
-    @Override
-    public ModConfigModel getDefaults() {
+    public ModConfigAdapter getDefaults() {
         return defaults;
     }
 
     @Override
     public void save() {
-        ModConfigModel config = getConfig();
+        ModConfigModel modified = getConfig().getModel();
         try {
-            serializer.write(config);
+            serializer.write(modified);
         } catch (Exception e) {
             LOGGER.error("Failed to save config", e);
             // TODO: Consider propagating an error to the GUI
             return;
         }
-        subscribers.forEach(subscriber -> subscriber.accept(config));
+        config = new ModConfigAdapter(modified);
     }
 
     @Override
     public void load() {
+        ModConfigModel model;
         try {
-            config = serializer.read();
+            model = serializer.read();
         } catch (Exception e) {
             LOGGER.error("Failed to load config, using defaults", e);
-            config = new ModConfigModel();
+            model = new ModConfigModel();
         }
-    }
-
-    @Override
-    public void onSave(Consumer<ModConfigModel> subscriber) {
-        subscribers.add(subscriber);
+        config = new ModConfigAdapter(model);
     }
 }

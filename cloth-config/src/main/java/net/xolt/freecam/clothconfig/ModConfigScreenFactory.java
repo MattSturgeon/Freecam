@@ -8,6 +8,7 @@ import me.shedaniel.clothconfig2.impl.builders.KeyCodeBuilder;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.xolt.freecam.clothconfig.model.ModConfigAdapter;
 import net.xolt.freecam.config.model.ConfigController;
 import net.xolt.freecam.config.model.FlightMode;
 import net.xolt.freecam.config.ModBindings;
@@ -24,9 +25,9 @@ public class ModConfigScreenFactory {
     private static final double MIN_SPEED = 0.0;
     private static final double MAX_SPEED = 10.0;
 
-    private final ConfigController<ModConfigModel> controller;
+    private final ConfigController<ModConfigAdapter> controller;
 
-    public ModConfigScreenFactory(ConfigController<ModConfigModel> controller) {
+    public ModConfigScreenFactory(ConfigController<ModConfigAdapter> controller) {
         this.controller = controller;
     }
 
@@ -35,11 +36,13 @@ public class ModConfigScreenFactory {
     }
 
     private ModConfigModel config() {
-        return controller.getConfig();
+        // TODO: we should really be working with a copy, not the controller's actual config
+        // Ideally the controller's ModConfigAdapter (view) would be immutable
+        return controller.getConfig().getModel();
     }
 
     private ModConfigModel defaults() {
-        return controller.getDefaults();
+        return controller.getDefaults().getModel();
     }
 
     /**

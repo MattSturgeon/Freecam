@@ -27,10 +27,11 @@ class CollisionBehavior {
             .matching(DoorBlock.class, TrapDoorBlock.class)
             .build();
 
-    private Predicate<Block> custom = block -> false;
+    private final Predicate<Block> custom;
 
     CollisionBehavior(ModConfigModel.CollisionConfig config) {
-        rebuild(config);
+        this.config = config;
+        this.custom = config.ignoreCustom ? buildWhitelistPredicate(config.whitelist) : block -> false;
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -54,21 +55,19 @@ class CollisionBehavior {
         return false;
     }
 
-    void rebuild(ModConfigModel.CollisionConfig config) {
-        String[] ids = config.whitelist.ids.stream()
+    private static Predicate<Block> buildWhitelistPredicate(ModConfigModel.CollisionConfig.CollisionWhitelist whitelist) {
+        String[] ids = whitelist.ids.stream()
                 .map(id -> id.contains(":") ? id : "minecraft:" + id)
                 .toArray(String[]::new);
 
-        Pattern[] patterns = config.whitelist.patterns.stream()
+        Pattern[] patterns = whitelist.patterns.stream()
                 .map(Pattern::compile)
                 .toArray(Pattern[]::new);
 
-        custom = Builder.builder()
+        return Builder.builder()
                 .matching(ids)
                 .matching(patterns)
                 .build();
-
-        this.config = config;
     }
 
     private static String getBlockId(Block block) {
