@@ -10,7 +10,7 @@ public interface ModConfig {
      * Will load config from disk and perform internal setup.
      */
     static void setup() {
-        ModConfigProvider.instance().setupConfig();
+        ModConfigProvider.instance().loadConfig();
     }
 
     static ModConfig get() {

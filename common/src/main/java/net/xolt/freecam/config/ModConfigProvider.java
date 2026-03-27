@@ -5,7 +5,8 @@ import net.xolt.freecam.util.SingleInstanceServiceLoader;
 public interface ModConfigProvider {
 
     MCAwareModConfig getConfig();
-    void setupConfig();
+    void saveConfig();
+    void loadConfig();
 
     static ModConfigProvider instance() {
         return Holder.INSTANCE;

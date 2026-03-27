@@ -19,7 +19,12 @@ public class ClothConfigProvider implements ModConfigProvider, ConfigScreenProvi
     }
 
     @Override
-    public void setupConfig() {
+    public void saveConfig() {
+        controller.save();
+    }
+
+    @Override
+    public void loadConfig() {
         controller.load();
     }
 
