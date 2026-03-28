@@ -1,11 +1,14 @@
 package net.xolt.freecam.config;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.xolt.freecam.util.SingleInstanceServiceLoader;
+import net.xolt.freecam.util.OptionalService;
+import net.xolt.freecam.util.OptionalServiceLoader;
+
+import java.util.Optional;
 
 import static net.xolt.freecam.Freecam.MC;
 
-public interface ConfigScreenProvider {
+public interface ConfigScreenProvider extends OptionalService {
 
     Screen getConfigScreen(Screen parent);
 
@@ -17,13 +20,7 @@ public interface ConfigScreenProvider {
         MC.setScreen(getConfigScreen(parent));
     }
 
-    static ConfigScreenProvider instance() {
-        return Holder.INSTANCE;
-    }
-
-    class Holder {
-        private Holder() {}
-
-        private static final ConfigScreenProvider INSTANCE = SingleInstanceServiceLoader.get(ConfigScreenProvider.class);
+    static Optional<ConfigScreenProvider> load() {
+        return OptionalServiceLoader.get(ConfigScreenProvider.class);
     }
 }
