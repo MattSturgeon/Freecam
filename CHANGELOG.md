@@ -7,6 +7,8 @@ and Freecam's versioning is based on [Semantic Versioning](https://semver.org/sp
 
 ## [Unreleased]
 
+Testing 123
+
 ### Added
 
 - The mod description is now translatable, but not yet translated ([172](https://github.com/MinecraftFreecam/Freecam/pull/172), [390](https://github.com/MinecraftFreecam/Freecam/pull/390))
