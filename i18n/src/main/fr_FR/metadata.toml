@@ -1,2 +1,3 @@
 [freecam.mod]
 description = "A highly customizable freecam mod."
+foo = "bar"
