@@ -108,6 +108,10 @@ tasks.generateReleaseMetadata {
     dependsOn(gradle.includedBuild("changelog").task(":getReleaseNotes"))
 }
 
+tasks.ideaIconSync {
+    sourceFile = project(":common").layout.projectDirectory.file("src/main/resources/icon.png")
+}
+
 tasks.named<Wrapper>("wrapper") {
     // Use "all" so we get sources and javadoc too
     distributionType = Wrapper.DistributionType.ALL

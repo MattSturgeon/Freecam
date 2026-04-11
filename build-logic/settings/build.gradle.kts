@@ -13,6 +13,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        create("ideaSync") {
+            id = "freecam.idea.sync"
+            implementationClass = "net.xolt.freecam.gradle.IdeaSyncPlugin"
+        }
         create("modMetadata") {
             id = "freecam.modmetadata"
             implementationClass = "net.xolt.freecam.gradle.ModMetadataSettingsPlugin"
