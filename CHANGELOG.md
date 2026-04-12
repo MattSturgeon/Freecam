@@ -11,6 +11,8 @@ and Freecam's versioning is based on [Semantic Versioning](https://semver.org/sp
 
 ### Changed
 
+- Re-rendered the project icon ([439](https://github.com/MinecraftFreecam/Freecam/pull/439))
+
 ### Removed
 
 ### Fixed
