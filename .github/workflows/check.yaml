@@ -42,7 +42,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Install CI dev dependencies
-        run: uv sync --locked --group dev
+        run: uv sync --locked --group ci --group dev
 
       - name: Check Python
         run: uv run check
