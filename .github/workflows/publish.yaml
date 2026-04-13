@@ -47,9 +47,9 @@ jobs:
           shopt -s nullglob
 
           meta=artifacts/release-metadata.json
-          files=( artifacts/*.json )
+          files=( artifacts/release-*.json )
           [ ${#files[@]} = 1 ] || {
-            echo "::error::Found ${#files[@]} json artifacts, expected 1"
+            echo "::error::Found ${#files[@]} release json artifacts, expected 1"
             exit 1
           }
           mv "${files[0]}" "$meta"

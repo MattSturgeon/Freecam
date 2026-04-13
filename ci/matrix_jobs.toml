@@ -5,6 +5,6 @@ gradle_args = ["--project-dir", "build-logic", ":check"]
 [[build]]
 name = "Release metadata"
 gradle_args = [":generateReleaseMetadata"]
-upload.path = "build/release-metadata/*.json"
+upload.path = "build/metadata/release-*.json"
 upload.archive = false
 upload.days = 5
