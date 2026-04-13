@@ -94,5 +94,3 @@ If you'd like to translate a language we don't currently target, please [open an
 
 ### Forge
 - None
-
-Curseforge page [here](https://www.curseforge.com/minecraft/mc-mods/free-cam).
