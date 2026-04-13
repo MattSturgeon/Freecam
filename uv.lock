@@ -21,11 +21,11 @@ wheels = [
 name = "freecam"
 version = "0.0.0"
 source = { virtual = "." }
-dependencies = [
-    { name = "freecam-ci" },
-]
 
 [package.dev-dependencies]
+ci = [
+    { name = "freecam-ci" },
+]
 dev = [
     { name = "mypy" },
     { name = "pytest" },
@@ -33,9 +33,9 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "freecam-ci", editable = "ci" }]
 
 [package.metadata.requires-dev]
+ci = [{ name = "freecam-ci", editable = "ci" }]
 dev = [
     { name = "mypy", specifier = ">=1.19.0" },
     { name = "pytest", specifier = ">=9.0.0" },
