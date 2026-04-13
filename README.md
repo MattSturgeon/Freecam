@@ -1,10 +1,14 @@
 # Freecam
 [![Crowdin](https://badges.crowdin.net/freecam/localized.svg)](https://crowdin.com/project/freecam)
 
+<!-- website:start id="description" -->
+
 This mod allows you to control your camera separately from your player. While it is enabled, you can fly around and travel through blocks within your render distance. Disabling it will restore you to your original position. This can be useful for quickly inspecting builds and exploring your world. 
 
 This mod works in multiplayer, but may be considered cheating on some servers.
 It is your responsibility to check **all** relevant rules **before** using this mod.
+
+<!-- website:stop -->
 
 While Freecam should only affect the client, it **may be possible** for servers to detect the mod being installed through various exploits in Minecraft,
 modding platforms, or this mod.  
@@ -16,10 +20,15 @@ Here's the [full license](./LICENSE).
 
 ## Translation
 
+<!-- website:start id="translation" -->
+
 You can help [translate Freecam on Crowdin](https://crowdin.com/project/freecam).
 If you're unfamiliar with Crowdin, you can read their [getting started as a volunteer translator guide](https://support.crowdin.com/enterprise/getting-started-for-volunteers).
 
 If you'd like to translate a language we don't currently target, please [open an issue](https://github.com/MinecraftFreecam/Freecam/issues/new) asking us to enable the language.
+
+<!-- website:stop -->
+<!-- website:start id="config" -->
 
 ## Keybinds
 
@@ -74,6 +83,8 @@ If you'd like to translate a language we don't currently target, please [open an
 |-----------------------|---------------------------------------------------------|---------------|
 | Freecam Notifications | Notifies you when entering/exiting freecam.             | `true`        |
 | Tripod Notifications  | Notifies you when entering/exiting tripod cameras.<br/> | `true`        |
+
+<!-- website:stop -->
 
 ## Requirements
 
