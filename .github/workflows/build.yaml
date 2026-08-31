@@ -27,6 +27,21 @@ jobs:
       release: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' }}
       matrix: true
 
+  create_release:
+    name: Create release PR
+    if: github.event_name == 'push' && !needs.prepare.outputs.do_release
+    runs-on: ubuntu-slim
+    permissions:
+      contents: read
+
+    needs: prepare
+    timeout-minutes: 5
+
+    steps:
+      - name: Example
+        run: |
+          echo "creating release!"
+
   build:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
