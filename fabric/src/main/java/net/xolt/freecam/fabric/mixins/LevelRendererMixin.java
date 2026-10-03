@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static net.xolt.freecam.Freecam.MC;
+
 //? if >=1.21.11 {
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -18,7 +21,6 @@ import net.minecraft.client.renderer.state.level.LevelRenderState;
 //? } else {
 /^import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -37,8 +39,6 @@ import net.minecraft.client.renderer.culling.Frustum;
 //? if <= 1.18.2 {
 /^import com.mojang.math.Matrix4f;
 ^///? }
-
-import static net.xolt.freecam.Freecam.MC;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
