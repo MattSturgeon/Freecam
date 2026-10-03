@@ -20,9 +20,10 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 /*import com.mojang.blaze3d.vertex.PoseStack;
 *///? }
 //? if <26.1 {
-/*import net.minecraft.world.entity.Entity;
+/*import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import static net.xolt.freecam.Freecam.MC;
 *///? }
 
@@ -71,12 +72,12 @@ public class GameRendererMixin {
     // Makes mouse clicks come from the player rather than the freecam entity when player control is enabled or if interaction mode is set to player.
     // Moved to Minecraft#pick in 26.1
     //? if <26.1 {
-    /*@ModifyVariable(method = "pick(F)V", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/Minecraft;getCameraEntity()Lnet/minecraft/world/entity/Entity;"))
-    private Entity onGetHitTargetSource(Entity entity) {
+    /*@WrapOperation(method = "pick(F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getCameraEntity()Lnet/minecraft/world/entity/Entity;"))
+    private Entity onGetCameraEntity(Minecraft instance, Operation<Entity> original) {
         if (Freecam.isEnabled() && (Freecam.isPlayerControlEnabled() || ModConfig.get().allowInteractionsFromPlayer())) {
             return MC.player;
         }
-        return entity;
+        return original.call(instance);
     }
     *///? }
 }
