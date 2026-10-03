@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class IrisShadowRendererMixin {
 
     // Hide player shadow in freecam if showPlayer is disabled
+    // Iris has had a renderPlayerEntity method since Iris 1.5 for Minecraft 1.18.2
     @Inject(method = "renderPlayerEntity", at = @At("HEAD"), cancellable = true)
     private void onRenderPlayerShadow(CallbackInfoReturnable<Integer> cir) {
         if (Freecam.isEnabled() && ModConfig.get().shouldHidePlayer()) {

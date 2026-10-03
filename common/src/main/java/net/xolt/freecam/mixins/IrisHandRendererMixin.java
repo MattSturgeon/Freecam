@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class IrisHandRendererMixin {
 
     // Hide hand in freecam if showHand is disabled
+    // Iris has had a canRender method since Iris 1.5 for Minecraft 1.18.2
     @Inject(method = "canRender", at = @At("HEAD"), cancellable = true)
     private void onRenderItemInHand(CallbackInfoReturnable<Boolean> cir) {
         if (Freecam.isEnabled() && ModConfig.get().shouldHideHand()) {
