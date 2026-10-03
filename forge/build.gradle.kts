@@ -100,6 +100,7 @@ dependencies {
 
     // Bundle the MixinExtras we build against
     // Jar-in-jar was added in Forge 40.1.60, before then we must shadow the common artefact and bootstrap it ourselves.
+    implementation(libs.mixinextras.common)
     if (supportsJarJar) {
         implementation(libs.mixinextras.forge)
         annotationProcessor(libs.mixinextras.forge)
@@ -112,7 +113,6 @@ dependencies {
             }
         }
     } else {
-        implementation(libs.mixinextras.common)
         annotationProcessor(libs.mixinextras.common)
         include(libs.mixinextras.common) {
             relocate("com.llamalad7.mixinextras", "${meta.group}.shadowed.mixinextras")
