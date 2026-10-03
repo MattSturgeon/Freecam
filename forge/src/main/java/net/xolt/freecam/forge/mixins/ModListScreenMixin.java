@@ -1,12 +1,7 @@
 package net.xolt.freecam.forge.mixins;
 
-//~ if >=1.18 'fmlclient.gui.screen' -> 'client.gui'
-import net.minecraftforge.client.gui.ModListScreen;
-//~ if >=1.18 fmlclient -> client
-import net.minecraftforge.client.gui.widget.ModListWidget;
-//? if forge: >=41.1
-import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
-
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.xolt.freecam.Freecam;
@@ -14,9 +9,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Map;
+
+//~ if >=1.18 'fmlclient.gui.screen' -> 'client.gui'
+import net.minecraftforge.fmlclient.gui.screen.ModListScreen;
+//~ if >=1.18 fmlclient -> client
+import net.minecraftforge.fmlclient.gui.widget.ModListWidget;
+//? if forge: >=41.1
+//import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 
 @Mixin(ModListScreen.class)
 abstract class ModListScreenMixin {
@@ -32,16 +33,15 @@ abstract class ModListScreenMixin {
     private ModListWidget.ModEntry selected;
 
     //~ if forge: >=41.1 'forgespi/language/IModFileInfo' -> 'fml/loading/moddiscovery/ModFileInfo'
-    @Redirect(method = "updateCache", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/loading/moddiscovery/ModFileInfo;getLicense()Ljava/lang/String;"), remap = false)
+    @WrapOperation(method = "updateCache", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/forgespi/language/IModFileInfo;getLicense()Ljava/lang/String;"), remap = false)
     //~ if forge: >=41.1 IModFileInfo -> ModFileInfo
-    String onGetLicense(ModFileInfo info) {
+    String wrapGetLicense(IModFileInfo instance, Operation<String> original) {
         // When using Freecam's ModFileInfo, check if we need to override the selected mod's license
-        if (info == freecam$getOurModFileInfo()) {
+        if (instance == freecam$getOurModFileInfo()) {
             String override = freecam$LICENSE_OVERRIDES.get(selected.getInfo().getModId());
             if (override != null) return override;
         }
-
-        return info.getLicense();
+        return original.call(instance);
     }
 
     @Unique

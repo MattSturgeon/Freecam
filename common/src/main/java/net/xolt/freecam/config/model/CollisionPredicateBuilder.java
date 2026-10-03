@@ -1,7 +1,5 @@
 package net.xolt.freecam.config.model;
 
-//~ if >= 1.19 '.Registry' -> '.registries.BuiltInRegistries'
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
@@ -9,6 +7,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+//~ if >= 1.19 '.Registry' -> '.registries.BuiltInRegistries'
+import net.minecraft.core.registries.BuiltInRegistries;
 
 class CollisionPredicateBuilder {
 

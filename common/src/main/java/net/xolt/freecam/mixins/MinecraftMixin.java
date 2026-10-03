@@ -1,40 +1,48 @@
 package net.xolt.freecam.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.xolt.freecam.Freecam.MC;
 import static net.xolt.freecam.config.ModBindings.KEY_TOGGLE;
 import static net.xolt.freecam.config.ModBindings.KEY_TRIPOD_RESET;
+
+//? if >=26.1 {
+import net.minecraft.world.entity.Entity;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import static net.xolt.freecam.Freecam.MC;
+//? }
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
     // Prevents attacks when allowInteract is disabled.
-    @Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
-    //~ if >1.17.1 CallbackInfo -> 'CallbackInfoReturnable<Boolean>'
-    private void onDoAttack(CallbackInfoReturnable<Boolean> ci) {
-        if (freecam$disableInteract()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "startAttack")
+    //? if >1.17.1 {
+    private boolean onDoAttack(Operation<Boolean> original) {
+        return !freecam$disableInteract() && original.call();
     }
+    //? } else {
+    /*private void onDoAttack(Operation<Void> original) {
+        if (!freecam$disableInteract()) original.call();
+    }
+    *///? }
 
     // Prevents item pick when allowInteract is disabled.
     //~ if >=26.1 pickBlock -> pickBlockOrEntity
-    @Inject(method = "pickBlockOrEntity", at = @At("HEAD"), cancellable = true)
-    private void onDoItemPick(CallbackInfo ci) {
-        if (freecam$disableInteract()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "pickBlockOrEntity")
+    private void onDoItemPick(Operation<Void> original) {
+        if (freecam$disableInteract()) return;
+        original.call();
     }
 
 
@@ -51,19 +59,18 @@ public class MinecraftMixin {
     //? }
 
     // Prevents block breaking when allowInteract is disabled.
-    @Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
-    private void onHandleBlockBreaking(CallbackInfo ci) {
-        if (freecam$disableInteract()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "continueAttack")
+    private void onHandleBlockBreaking(boolean down, Operation<Void> original) {
+        if (freecam$disableInteract()) return;
+        original.call(down);
     }
 
     // Prevents hotbar keys from changing selected slot when freecam key is held
-    @Inject(method = "handleKeybinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;consumeClick()Z", ordinal = 2), cancellable = true)
-    private void onHandleInputEvents(CallbackInfo ci) {
-        if (KEY_TOGGLE.get().isDown() || KEY_TRIPOD_RESET.get().isDown()) {
-            ci.cancel();
-        }
+    @WrapOperation(method = "handleKeybinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;consumeClick()Z", ordinal = 2))
+    private boolean onHandleHotbarKeys(KeyMapping instance, Operation<Boolean> original) {
+        if (KEY_TOGGLE.get().isDown() || KEY_TRIPOD_RESET.get().isDown()) return false;
+
+        return original.call(instance);
     }
 
     // Disables freecam if the player disconnects.

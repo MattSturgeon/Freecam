@@ -1,13 +1,12 @@
 package net.xolt.freecam.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.player.LocalPlayer;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -15,27 +14,27 @@ import static net.xolt.freecam.Freecam.MC;
 public abstract class LocalPlayerMixin extends EntityMixin {
 
     // Needed for Baritone compatibility.
-    @Inject(method = "isControlledCamera", at = @At("HEAD"), cancellable = true)
-    private void onIsCamera(CallbackInfoReturnable<Boolean> cir) {
-        if (Freecam.isEnabled() && freecam$this() == MC.player) {
-            cir.setReturnValue(true);
-        }
+    @WrapMethod(method = "isControlledCamera")
+    private boolean onIsCamera(Operation<Boolean> original) {
+        return Freecam.isEnabled() && freecam$this() == MC.player || original.call();
     }
 
     // Makes rotation depend upon FreeCamera rather than the player.
     @Override
-    protected void onGetViewXRot(float partialTick, CallbackInfoReturnable<Float> cir) {
+    protected float onGetViewXRot(float partialTick, Operation<Float> original) {
         if (freecam$useFreecamRotation()) {
-            cir.setReturnValue(Freecam.getFreeCamera().getViewXRot(partialTick));
+            return Freecam.getFreeCamera().getViewXRot(partialTick);
         }
+        return super.onGetViewXRot(partialTick, original);
     }
 
     // Makes rotation depend upon FreeCamera rather than the player.
-    @Inject(method = "getViewYRot", at = @At("HEAD"), cancellable = true)
-    private void onGetViewYRot(float partialTick, CallbackInfoReturnable<Float> cir) {
+    @WrapMethod(method = "getViewYRot")
+    private float onGetViewYRot(float partialTick, Operation<Float> original) {
         if (freecam$useFreecamRotation()) {
-            cir.setReturnValue(Freecam.getFreeCamera().getViewYRot(partialTick));
+            return Freecam.getFreeCamera().getViewYRot(partialTick);
         }
+        return original.call(partialTick);
     }
 
     @Unique

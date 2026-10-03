@@ -1,11 +1,11 @@
 package net.xolt.freecam.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.xolt.freecam.Freecam;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 //? if >= 1.21.11 {
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 *///? }
-
 //? if <1.21.11
 //import static net.xolt.freecam.Freecam.MC;
 
@@ -29,25 +28,33 @@ public class AvatarRendererMixin {
     // Prevent rendering of nametag in inventory screen
     //~ if >= 26.0 'state/CameraRenderState' -> 'state/level/CameraRenderState'
     //~ if >= 26.0 'submitNameTag' -> 'submitNameDisplay'
-    @Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At("HEAD"), cancellable = true)
-    private void onSubmitNameDisplay(AvatarRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-        if (Freecam.isEnabled() && renderState.shadowPieces.isEmpty()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V")
+    private void onSubmitNameDisplay(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, Operation<Void> original) {
+        if (Freecam.isEnabled() && state.shadowPieces.isEmpty()) return;
+        original.call(state, poseStack, submitNodeCollector, camera);
     }
     //? } else {
-    /*@Inject(method = "renderNameTag", at = @At("HEAD"), cancellable = true)
-    private void onRenderLabel(Entity renderState,
-                               Component component,
-                               PoseStack poseStack,
-                               MultiBufferSource multiBufferSource,
-                               int packedLightCoords,
-                               //? if >=1.20.6
-                               float partialTick,
-                               CallbackInfo ci) {
-        if (Freecam.isEnabled() && !MC.getEntityRenderDispatcher().shouldRenderShadow) {
-            ci.cancel();
-        }
+    /*@WrapMethod(method = "renderNameTag")
+    private void onRenderLabel(
+            Entity renderState,
+            Component component,
+            PoseStack poseStack,
+            MultiBufferSource multiBufferSource,
+            int packedLightCoords,
+            //? if >=1.20.6
+            float partialTick,
+            Operation<Void> original)
+   {
+        if (Freecam.isEnabled() && !MC.getEntityRenderDispatcher().shouldRenderShadow) return;
+        original.call(
+            renderState,
+            component,
+            poseStack,
+            multiBufferSource,
+            packedLightCoords
+            //? if >=1.20.6
+            , partialTick
+        );
     }
     *///? }
 }

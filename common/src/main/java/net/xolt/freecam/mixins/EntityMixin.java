@@ -1,14 +1,13 @@
 package net.xolt.freecam.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -16,58 +15,56 @@ import static net.xolt.freecam.Freecam.MC;
 public class EntityMixin {
 
     /// Overridden by [LocalPlayerMixin].
-    @Inject(method = "getViewXRot", at = @At("HEAD"), cancellable = true)
-    protected void onGetViewXRot(float partialTick, CallbackInfoReturnable<Float> cir) {
-        // No-op
+    @WrapMethod(method = "getViewXRot")
+    protected float onGetViewXRot(float partialTick, Operation<Float> original) {
+        return original.call(partialTick); // No-op
     }
 
     // Makes mouse input rotate the FreeCamera.
-    @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
-    private void onChangeLookDirection(double rotation, double pitch, CallbackInfo ci) {
+    @WrapMethod(method = "turn")
+    private void onChangeLookDirection(double rotation, double pitch, Operation<Void> original) {
         if (Freecam.isEnabled() && freecam$this() == MC.player && !Freecam.isPlayerControlEnabled()) {
             Freecam.getFreeCamera().turn(rotation, pitch);
-            ci.cancel();
+            return;
         }
+        original.call(rotation, pitch);
     }
 
     // Prevents FreeCamera from pushing/getting pushed by entities.
-    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
-    private void onPushAwayFrom(Entity entity, CallbackInfo ci) {
+    @WrapMethod(method = "push(Lnet/minecraft/world/entity/Entity;)V")
+    private void onPushAwayFrom(Entity entity, Operation<Void> original) {
         if (Freecam.isEnabled() && (entity == Freecam.getFreeCamera() || freecam$this() == Freecam.getFreeCamera())) {
-            ci.cancel();
+            return;
         }
+        original.call(entity);
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @Inject(method = "setDeltaMovement(DDD)V", at = @At("HEAD"), cancellable = true)
-    private void onSetVelocity(CallbackInfo ci) {
-        if (freecam$shouldFreeze()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "setDeltaMovement(DDD)V")
+    private void onSetVelocity(double x, double y, double z, Operation<Void> original) {
+        if (freecam$shouldFreeze()) return;
+        original.call(x, y, z);
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @Inject(method = "moveRelative", at = @At("HEAD"), cancellable = true)
-    private void onUpdateVelocity(CallbackInfo ci) {
-        if (freecam$shouldFreeze()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "moveRelative")
+    private void onUpdateVelocity(float speed, Vec3 input, Operation<Void> original) {
+        if (freecam$shouldFreeze()) return;
+        original.call(speed, input);
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @Inject(method = "setPos(DDD)V", at = @At("HEAD"), cancellable = true)
-    private void onSetPosition(CallbackInfo ci) {
-        if (freecam$shouldFreeze()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "setPos(DDD)V")
+    private void onSetPosition(double x, double y, double z, Operation<Void> original) {
+        if (freecam$shouldFreeze()) return;
+        original.call(x, y, z);
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @Inject(method = "setPosRaw", at = @At("HEAD"), cancellable = true)
-    private void onSetPos(CallbackInfo ci) {
-        if (freecam$shouldFreeze()) {
-            ci.cancel();
-        }
+    @WrapMethod(method = "setPosRaw")
+    private void onSetPos(double x, double y, double z, Operation<Void> original) {
+        if (freecam$shouldFreeze()) return;
+        original.call(x, y, z);
     }
 
     @Unique

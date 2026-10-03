@@ -1,14 +1,13 @@
 package net.xolt.freecam.forge.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -20,8 +19,8 @@ public class EntityRenderDispatcherMixin {
     Forge includes an additional condition inside LevelRenderer's extractVisibleEntities method,
     causing non-camera LocalPlayers to render
      **/
-    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
-    private <E extends Entity> void onShouldRender(
+    @WrapMethod(method = "shouldRender")
+    private <E extends Entity> boolean onShouldRender(
         E entity,
         Frustum culler,
         double camX,
@@ -29,10 +28,11 @@ public class EntityRenderDispatcherMixin {
         double camZ,
         //? if >=26.3
         float partialTicks,
-        CallbackInfoReturnable<Boolean> cir)
+        Operation<Boolean> original)
     {
         if (entity == MC.player && Freecam.isEnabled() && ModConfig.get().shouldHidePlayer()) {
-            cir.setReturnValue(false);
+            return false;
         }
+        return original.call(entity, culler, camX, camY, camZ /*? if >=26.3 >>')' */, partialTicks);
     }
 }

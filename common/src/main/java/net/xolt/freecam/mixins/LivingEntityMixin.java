@@ -1,5 +1,7 @@
 package net.xolt.freecam.mixins;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.entity.LivingEntity;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
@@ -9,7 +11,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.xolt.freecam.Freecam.MC;
 import static net.xolt.freecam.config.model.FlightMode.CREATIVE;
@@ -20,11 +21,12 @@ public abstract class LivingEntityMixin {
     @Shadow public abstract float getHealth();
 
     // Allows for the horizontal speed of creative flight to be configured separately from vertical speed.
-    @Inject(method = "getFrictionInfluencedSpeed", at = @At("HEAD"), cancellable = true)
-    private void onGetMovementSpeed(CallbackInfoReturnable<Float> cir) {
+    @WrapMethod(method = "getFrictionInfluencedSpeed")
+    private float onGetMovementSpeed(float friction, Operation<Float> original) {
         if (Freecam.isEnabled() && ModConfig.get().getFlightMode().equals(CREATIVE) && freecam$this() == Freecam.getFreeCamera()) {
-            cir.setReturnValue((float) (ModConfig.get().getHorizontalSpeed() / 10) * (Freecam.getFreeCamera().isSprinting() ? 2 : 1));
+            return (float) (ModConfig.get().getHorizontalSpeed() / 10) * (Freecam.getFreeCamera().isSprinting() ? 2 : 1);
         }
+        return original.call(friction);
     }
 
     // Disables freecam upon receiving damage if disableOnDamage is enabled.
