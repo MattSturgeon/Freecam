@@ -3,11 +3,13 @@ package net.xolt.freecam.mixins;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -31,40 +33,43 @@ public class EntityMixin {
     }
 
     // Prevents FreeCamera from pushing/getting pushed by entities.
-    @WrapMethod(method = "push(Lnet/minecraft/world/entity/Entity;)V")
-    private void onPushAwayFrom(Entity entity, Operation<Void> original) {
+    @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    private void onPushAwayFrom(Entity entity, CallbackInfo ci) {
         if (Freecam.isEnabled() && (entity == Freecam.getFreeCamera() || freecam$this() == Freecam.getFreeCamera())) {
-            return;
+            ci.cancel();
         }
-        original.call(entity);
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @WrapMethod(method = "setDeltaMovement(DDD)V")
-    private void onSetVelocity(double x, double y, double z, Operation<Void> original) {
-        if (freecam$shouldFreeze()) return;
-        original.call(x, y, z);
+    @Inject(method = "setDeltaMovement(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void onSetVelocity(CallbackInfo ci) {
+        if (freecam$shouldFreeze()) {
+            ci.cancel();
+        }
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @WrapMethod(method = "moveRelative")
-    private void onUpdateVelocity(float speed, Vec3 input, Operation<Void> original) {
-        if (freecam$shouldFreeze()) return;
-        original.call(speed, input);
+    @Inject(method = "moveRelative", at = @At("HEAD"), cancellable = true)
+    private void onUpdateVelocity(CallbackInfo ci) {
+        if (freecam$shouldFreeze()) {
+            ci.cancel();
+        }
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @WrapMethod(method = "setPos(DDD)V")
-    private void onSetPosition(double x, double y, double z, Operation<Void> original) {
-        if (freecam$shouldFreeze()) return;
-        original.call(x, y, z);
+    @Inject(method = "setPos(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void onSetPosition(CallbackInfo ci) {
+        if (freecam$shouldFreeze()) {
+            ci.cancel();
+        }
     }
 
     // Freezes the player's position if freezePlayer is enabled.
-    @WrapMethod(method = "setPosRaw")
-    private void onSetPos(double x, double y, double z, Operation<Void> original) {
-        if (freecam$shouldFreeze()) return;
-        original.call(x, y, z);
+    @Inject(method = "setPosRaw", at = @At("HEAD"), cancellable = true)
+    private void onSetPos(CallbackInfo ci) {
+        if (freecam$shouldFreeze()) {
+            ci.cancel();
+        }
     }
 
     @Unique

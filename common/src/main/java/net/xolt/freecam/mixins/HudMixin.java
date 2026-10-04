@@ -4,12 +4,13 @@ package net.xolt.freecam.mixins;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.xolt.freecam.Freecam;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -25,14 +26,9 @@ public class HudMixin {
 
     // Don't render equipped-item overlays while Freecam is active
     // NOTE: Was in GuiMixin before 26.2
-    @WrapMethod(method = "extractTextureOverlay")
-    private void wrapRenderTextureOverlay(
-        GuiGraphicsExtractor graphics,
-        Identifier texture,
-        float alpha,
-        Operation<Void> original)
-    {
-        if (!Freecam.isEnabled()) original.call(graphics, texture, alpha);
+    @Inject(method = "extractTextureOverlay", at = @At("HEAD"), cancellable = true)
+    private void onRenderTextureOverlay(CallbackInfo ci) {
+        if (Freecam.isEnabled()) ci.cancel();
     }
 }
 //? }

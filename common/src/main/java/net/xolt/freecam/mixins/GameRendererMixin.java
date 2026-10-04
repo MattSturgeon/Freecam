@@ -6,24 +6,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? if >=26.3 {
-import com.mojang.renderpearl.api.textures.GpuTextureView;
-import net.minecraft.client.renderer.state.level.PlayerRenderState;
-//? }
-//? if >=1.21.11 {
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-//? } else {
-/*import net.minecraft.client.Camera;
-*///? }
-//? if <1.20.6 {
-/*import com.mojang.blaze3d.vertex.PoseStack;
-*///? }
 //? if <26.1 {
 /*import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import org.spongepowered.asm.mixin.injection.At;
 import static net.xolt.freecam.Freecam.MC;
 *///? }
 
@@ -31,33 +21,11 @@ import static net.xolt.freecam.Freecam.MC;
 public class GameRendererMixin {
 
     // Hide hand in freecam if showHand is disabled
-    @WrapMethod(method = "renderItemInHand")
-    private void onRenderItemInHand(
-        //? if >=26.3 {
-        CameraRenderState cameraState,
-        PlayerRenderState playerState,
-        GpuTextureView depthTextureView,
-        //? } else if >=1.20.6 {
-        /*//~ if >=1.21.11 Camera -> CameraRenderState
-        CameraRenderState cameraState,
-        float deltaPartialTick,
-        //~ if >=26.1 Matrix4f -> Matrix4fc
-        org.joml.Matrix4fc modelViewMatrix,
-        *///? } else {
-        /*PoseStack poseStack,
-        Camera camera,
-        float deltaPartialTick,
-        *///? }
-        Operation<Void> original)
-    {
-        if (Freecam.isEnabled() && ModConfig.get().shouldHideHand()) return;
-        //? if >=26.3 {
-        original.call(cameraState, playerState, depthTextureView);
-        //? } else if >=1.20.6 {
-        /*original.call(cameraState, deltaPartialTick, modelViewMatrix);
-        *///? } else {
-        /*original.call(poseStack, camera, deltaPartialTick);
-        *///? }
+    @Inject(method = "renderItemInHand", at = @At("HEAD"), cancellable = true)
+    private void onRenderItemInHand(CallbackInfo ci) {
+        if (Freecam.isEnabled() && ModConfig.get().shouldHideHand()) {
+            ci.cancel();
+        }
     }
 
     // Disables block outlines when allowInteract is disabled.

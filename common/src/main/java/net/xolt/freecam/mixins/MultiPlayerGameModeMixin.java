@@ -14,6 +14,9 @@ import net.xolt.freecam.Freecam;
 import net.xolt.freecam.config.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static net.xolt.freecam.Freecam.MC;
 
@@ -78,9 +81,11 @@ public class MultiPlayerGameModeMixin {
     *///? }
 
     // Prevents attacking self.
-    @WrapMethod(method = "attack")
-    private void onAttackEntity(Player player, Entity target, Operation<InteractionResult> original) {
-        if (player != target) original.call(player, target);
+    @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
+    private void onAttackEntity(Player player, Entity target, CallbackInfo ci) {
+        if (target == MC.player) {
+            ci.cancel();
+        }
     }
 
     @Unique
