@@ -25,25 +25,24 @@ import static net.xolt.freecam.Freecam.MC;
 public class MinecraftMixin {
 
     // Prevents attacks when allowInteract is disabled.
-    @WrapMethod(method = "startAttack")
     //? if >1.17.1 {
+    @WrapMethod(method = "startAttack")
     private boolean onDoAttack(Operation<Boolean> original) {
         return !freecam$disableInteract() && original.call();
     }
     //? } else {
-    /*private void onDoAttack(Operation<Void> original) {
-        if (!freecam$disableInteract()) original.call();
+    /*@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
+    private void onDoAttack(CallbackInfo ci) {
+        if (freecam$disableInteract()) ci.cancel();
     }
     *///? }
 
     // Prevents item pick when allowInteract is disabled.
     //~ if >=26.1 pickBlock -> pickBlockOrEntity
-    @WrapMethod(method = "pickBlockOrEntity")
-    private void onDoItemPick(Operation<Void> original) {
-        if (freecam$disableInteract()) return;
-        original.call();
+    @Inject(method = "pickBlockOrEntity", at = @At("HEAD"), cancellable = true)
+    private void onDoItemPick(CallbackInfo ci) {
+        if (freecam$disableInteract()) ci.cancel();
     }
-
 
     // Makes mouse clicks come from the player rather than the freecam entity when player control is enabled or if interaction mode is set to player.
     // Was GameRenderer#pick before 26.1
@@ -58,10 +57,9 @@ public class MinecraftMixin {
     //? }
 
     // Prevents block breaking when allowInteract is disabled.
-    @WrapMethod(method = "continueAttack")
-    private void onHandleBlockBreaking(boolean down, Operation<Void> original) {
-        if (freecam$disableInteract()) return;
-        original.call(down);
+    @Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
+    private void onHandleBlockBreaking(CallbackInfo ci) {
+        if (freecam$disableInteract()) ci.cancel();
     }
 
     // Prevents hotbar keys from changing selected slot when freecam key is held
