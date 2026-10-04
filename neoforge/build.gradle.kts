@@ -174,10 +174,16 @@ tasks.processResources {
     rename("icon-100.png", "banner.png")
 
     filesMatching("freecam-neoforge.mixins.json") {
-        expand("mixinCompatLevel" to "JAVA_${meta.javaVersion}")
+        expand(
+            "mixinCompatLevel" to "JAVA_${meta.javaVersion}",
+            "mixinExtrasMinVersion" to libs.versions.mixinextras.orNull.toString(),
+        )
     }
 
-    inputs.properties("java_version" to meta.javaVersion)
+    inputs.properties(
+        "java_version" to meta.javaVersion,
+        "mixinextras_version" to libs.versions.mixinextras,
+    )
 }
 
 tasks.shadowJar {

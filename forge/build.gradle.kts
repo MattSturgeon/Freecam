@@ -243,11 +243,15 @@ tasks.processResources {
     rename("icon-100.png", "logo.png")
 
     filesMatching("freecam-forge.mixins.json") {
-        expand("mixinCompatLevel" to "JAVA_${meta.javaVersion}")
+        expand(
+            "mixinCompatLevel" to "JAVA_${meta.javaVersion}",
+            "mixinExtrasMinVersion" to libs.versions.mixinextras.orNull.toString(),
+        )
     }
 
     inputs.properties(
         "java_version" to meta.javaVersion,
+        "mixinExtrasMinVersion" to libs.versions.mixinextras,
         "mixinConfigs" to mixinConfigNames,
         "mixinRefmap" to refmapName,
         "supportsJarJar" to supportsJarJar,
